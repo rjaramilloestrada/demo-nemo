@@ -344,7 +344,8 @@ D.car.ladder.forEach(s => {
     setTimeout(() => window.ScrollTrigger?.refresh(), 520);
   };
   toggle.addEventListener('click', flip);
-  row.addEventListener('click', e => { if (!e.target.closest('button,a,input')) flip(); });
+  // composedPath se fija al iniciar el evento: sirve aunque el botón "Agregar" reemplace su contenido durante el clic
+  row.addEventListener('click', e => { if (!e.composedPath().some(n => n.matches?.('button,a,input'))) flip(); });
   svcBox.append(art);
 });
 
@@ -476,6 +477,22 @@ function mapFallback() {
   mapCanvas.classList.add('is-fallback');
   const cap = $('.map__cap'); if (cap) cap.textContent = 'Zonas aproximadas de cobertura.';
 }
+// Suaviza un anillo de coordenadas con el algoritmo de Chaikin (esquinas redondeadas, aspecto orgánico)
+function chaikin(ring, iters = 4) {
+  let pts = ring.slice(0, -1);
+  for (let k = 0; k < iters; k++) {
+    const out = [];
+    for (let i = 0; i < pts.length; i++) {
+      const [x0, y0] = pts[i], [x1, y1] = pts[(i + 1) % pts.length];
+      out.push([x0 * .75 + x1 * .25, y0 * .75 + y1 * .25], [x0 * .25 + x1 * .75, y0 * .25 + y1 * .75]);
+    }
+    pts = out;
+  }
+  return [...pts, pts[0]];
+}
+function smoothAreas(fc) {
+  return { ...fc, features: fc.features.map(f => ({ ...f, geometry: { type: 'Polygon', coordinates: [chaikin(f.geometry.coordinates[0])] } })) };
+}
 function pinEl(name) { return h('div', { class: 'pin' }, h('span', { class: 'pin__label' }, name), h('span', { class: 'pin__dot' })); }
 function bounds() {
   let a = [180, 90, -180, -90];
@@ -509,9 +526,11 @@ function startMap() {
       m.on('load', () => {
         if (mapState !== 'loading') return;
         clearTimeout(timer); mapState = 'live';
-        m.addSource('zonas', { type: 'geojson', data: geo.areas });
-        m.addLayer({ id: 'zonas-fill', type: 'fill', source: 'zonas', paint: { 'fill-color': D.brand.colors.orange, 'fill-opacity': 0.2 } });
-        m.addLayer({ id: 'zonas-line', type: 'line', source: 'zonas', paint: { 'line-color': D.brand.colors.orange, 'line-width': 2 } });
+        const orange = D.brand.colors.orange;
+        m.addSource('zonas', { type: 'geojson', data: smoothAreas(geo.areas) });
+        m.addLayer({ id: 'zonas-fill', type: 'fill', source: 'zonas', paint: { 'fill-color': orange, 'fill-opacity': 0.16 } });
+        m.addLayer({ id: 'zonas-glow', type: 'line', source: 'zonas', paint: { 'line-color': orange, 'line-width': 12, 'line-blur': 10, 'line-opacity': 0.45 } });
+        m.addLayer({ id: 'zonas-line', type: 'line', source: 'zonas', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': orange, 'line-width': 1.6, 'line-dasharray': [2.2, 1.6] } });
         geo.areas.features.forEach(f => new gl.Marker({ element: pinEl(f.properties.name), anchor: 'bottom' }).setLngLat(f.properties.pin).addTo(m));
         const pad = Math.min(56, mapCanvas.clientWidth * 0.12);
         m.fitBounds(bounds(), { padding: { top: pad + 34, bottom: pad, left: pad, right: pad }, duration: 0 });
@@ -537,7 +556,7 @@ function setWorld(w, origin) {
   if (html.dataset.world === w) return;
   const apply = () => {
     html.dataset.world = w;
-    $('meta[name="theme-color"]').content = w === 'home' ? '#EAF0F5' : '#F4EFE6';
+    $('meta[name="theme-color"]').content = w === 'home' ? '#0C2136' : '#151618';
     $$('[data-world-btn]').forEach(b => b.setAttribute('aria-selected', b.dataset.worldBtn === w));
     $('#world-car').hidden = w !== 'car'; $('#world-home').hidden = w !== 'home';
     placePill(); navState();
