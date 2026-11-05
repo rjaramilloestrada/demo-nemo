@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow, noarchive">
 <title>Nemo Cleaning Services · Demo</title>
 <meta name="description" content="Demo de diseño preparado por IGNIS para Nemo Cleaning Services. No es el sitio oficial.">
-<meta name="theme-color" content="#151618">
+<meta name="theme-color" content="#F4EFE6">
 <meta property="og:title" content="Nemo Cleaning Services · Demo">
 <meta property="og:description" content="Demo de diseño preparado por IGNIS para Nemo Cleaning Services. No es el sitio oficial.">
 <meta property="og:image" content="https://rjaramilloestrada.github.io/demo-nemo/assets/og.jpg">
@@ -14,225 +14,283 @@
 <link rel="icon" href="assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500;1,9..144,700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/door-after-full.webp">
 <link rel="preload" as="image" href="assets/door-before-full.webp">
 <link rel="stylesheet" href="styles.css">
-<script>try{if(sessionStorage.getItem('intro'))document.documentElement.classList.add('no-intro')}catch(e){}</script>
 </head>
 <body>
 <a class="skip" href="#catalogo">Saltar al catálogo</a>
 
 <div class="demo-bar" role="note">
-  <span class="demo-bar__dot" aria-hidden="true"></span>
   <span class="demo-bar__long" data-text="meta.demoBanner"></span>
   <span class="demo-bar__short" data-text="meta.demoBannerShort"></span>
 </div>
 
-<!-- Intro de marca -->
-<div class="intro" aria-hidden="true">
-  <div class="intro__logo"><img src="assets/logo-white.webp" alt="" width="462" height="335"></div>
-  <div class="intro__squeegee"></div>
-</div>
-
 <header class="nav" data-nav>
-  <a class="nav__logo" href="#top" aria-label="Nemo, inicio"><img src="assets/logo-white.webp" alt="Nemo" width="462" height="335"></a>
-  <nav class="nav__links" aria-label="Secciones">
-    <a href="#catalogo" data-go-world="car">Autos</a>
-    <a href="#catalogo" data-go-world="home">Hogar y oficina</a>
-    <a href="#planes" data-go-world="car">Planes</a>
-    <a href="#cobertura">Cobertura</a>
-  </nav>
-  <a class="btn btn--wa btn--sm magnetic" data-wa="Hola Nemo, quiero información sobre sus servicios." href="#" target="_blank" rel="noopener">
-    <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wa"/></svg><span>WhatsApp</span>
-  </a>
+  <div class="nav__in">
+    <a class="nav__logo" href="#top" aria-label="Nemo, inicio"><img src="assets/logo-orange.webp" alt="Nemo" width="462" height="335"></a>
+    <nav class="nav__links" aria-label="Secciones">
+      <a href="#catalogo" data-go-world="car">Autos</a>
+      <a href="#catalogo" data-go-world="home">Hogar y oficina</a>
+      <a href="#planes" data-go-world="car">Planes</a>
+      <a href="#cobertura">Cobertura</a>
+    </nav>
+    <div class="nav__size" data-navsize>
+      <button class="nav__size-btn" type="button" aria-expanded="false" aria-controls="size-menu" data-size-toggle>
+        <small>Precios para</small><b data-size-current></b>
+        <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-chev"/></svg>
+      </button>
+      <div id="size-menu" class="nav__size-menu" role="group" aria-label="Cambiar tamaño de vehículo" data-size-chips hidden></div>
+    </div>
+    <a class="btn btn--wa btn--sm nav__wa" data-wa="Hola Nemo, quiero información sobre sus servicios." href="#" target="_blank" rel="noopener" aria-label="Escribir a Nemo por WhatsApp">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wa"/></svg><span>WhatsApp</span>
+    </a>
+    <button class="nav__burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú" data-menu-toggle><span></span><span></span></button>
+  </div>
 </header>
 
+<div id="menu" class="menu" data-menu role="dialog" aria-modal="true" aria-label="Menú" hidden>
+  <div class="menu__top">
+    <img src="assets/logo-white.webp" alt="Nemo" width="462" height="335">
+    <button class="menu__close" type="button" aria-label="Cerrar menú" data-menu-close><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-x"/></svg></button>
+  </div>
+  <nav class="menu__links" aria-label="Menú principal">
+    <a href="#catalogo" data-go-world="car"><small>01</small>Autos</a>
+    <a href="#catalogo" data-go-world="home"><small>02</small>Hogar y oficina</a>
+    <a href="#planes" data-go-world="car"><small>03</small>Planes</a>
+    <a href="#cobertura"><small>04</small>Cobertura</a>
+  </nav>
+  <div class="menu__foot">
+    <a class="btn btn--wa" data-wa="Hola Nemo, quiero información sobre sus servicios." href="#" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wa"/></svg><span data-text="contact.whatsappDisplay"></span></a>
+    <a class="menu__ig" data-ig href="#" target="_blank" rel="noopener">@<span data-text="contact.instagram"></span></a>
+  </div>
+</div>
+
+<div class="page">
 <main id="top">
-  <!-- HERO -->
+  <!-- 2 · HERO -->
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero__copy">
-      <p class="eyebrow"><span class="eyebrow__line"></span>Nemo Cleaning Services · Guayaquil</p>
+      <p class="kicker">Nemo Cleaning Services · Guayaquil</p>
       <h1 id="hero-title" class="hero__title">
-        <span class="hero__state hero__state--dirty">Pasa el dedo.<br><em>Mira la diferencia.</em></span>
+        <span class="hero__state hero__state--dirty">Pasa el dedo. Mira la diferencia.</span>
         <span class="hero__state hero__state--clean" aria-hidden="true">Más que limpieza, <em>restauramos valor.</em></span>
       </h1>
       <p class="hero__lead">Autos, hogar y oficina. Elige tu servicio, mira el precio exacto y envía tu pedido por WhatsApp en segundos.</p>
       <div class="hero__ctas">
-        <a class="btn btn--primary magnetic" href="#catalogo" data-go-world="car">Ver precios para mi auto</a>
-        <a class="btn btn--ghost magnetic" href="#catalogo" data-go-world="home">Hogar y oficina</a>
+        <a class="btn btn--primary" href="#catalogo" data-go-world="car">Ver precios para mi auto<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-arrow"/></svg></a>
+        <a class="btn btn--ghost" href="#catalogo" data-go-world="home">Hogar y oficina</a>
       </div>
-      <ul class="hero__chips" aria-label="Destacados">
-        <li><strong data-hero-from="classic"></strong> Classic Wash desde</li>
-        <li><strong data-hero-from="plan-basic"></strong> Plan mensual desde</li>
-        <li><strong>9H</strong> Cerámico de grafeno</li>
-      </ul>
+      <dl class="hero__facts">
+        <div><dt>Classic Wash desde</dt><dd data-hero-from="classic"></dd></div>
+        <div><dt>Plan mensual desde</dt><dd data-hero-from="plan-basic"></dd></div>
+        <div><dt>Cerámico de grafeno</dt><dd>9H</dd></div>
+      </dl>
     </div>
 
-    <div class="hero__stage" data-wipe>
-      <img class="hero__after" src="assets/door-after-full.webp" alt="Puerta de un auto después del Detailing Exterior de Nemo: pintura con brillo de espejo" width="344" height="736" fetchpriority="high">
-      <img class="hero__before-static" src="assets/door-before-full.webp" alt="" width="344" height="736" aria-hidden="true">
-      <canvas class="hero__canvas" aria-hidden="true"></canvas>
-      <canvas class="hero__fx" aria-hidden="true"></canvas>
-      <div class="hero__hint" aria-hidden="true">
-        <span class="hero__hand"><svg viewBox="0 0 24 24"><use href="#i-hand"/></svg></span>
-        <span data-text="hero.hint"></span>
+    <figure class="hero__figure">
+      <div class="hero__stage" data-wipe>
+        <img class="hero__after" src="assets/door-after-full.webp" alt="Puerta de un auto después del Detailing Exterior de Nemo: pintura con brillo de espejo" width="344" height="736" fetchpriority="high">
+        <img class="hero__before-static" src="assets/door-before-full.webp" alt="" width="344" height="736" aria-hidden="true">
+        <canvas class="hero__canvas" aria-hidden="true"></canvas>
+        <canvas class="hero__fx" aria-hidden="true"></canvas>
+        <div class="hero__hint" aria-hidden="true">
+          <span class="hero__hand"><svg viewBox="0 0 24 24"><use href="#i-hand"/></svg></span>
+          <span data-text="hero.hint"></span>
+        </div>
+        <div class="hero__meter" aria-hidden="true"><span></span><b>0%</b></div>
+        <div class="hero__labels" aria-hidden="true"><span class="tag tag--before">Antes</span><span class="tag tag--after">Después</span></div>
+        <button class="hero__skip" type="button">Ver resultado</button>
+        <div class="hero__cursor" aria-hidden="true"><span>Limpiar</span></div>
       </div>
-      <div class="hero__meter" aria-hidden="true"><span></span><b>0%</b></div>
-      <div class="hero__labels" aria-hidden="true"><span class="tag tag--before">Antes</span><span class="tag tag--after">Después</span></div>
-      <button class="hero__skip" type="button">Ver resultado</button>
-      <div class="hero__cursor" aria-hidden="true"><span>Limpiar</span></div>
-    </div>
-
-    <svg class="badge" viewBox="0 0 120 120" aria-hidden="true">
-      <defs><path id="circ" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>
-      <text><textPath href="#circ">CLEANING SERVICES · MÁS QUE LIMPIEZA · </textPath></text>
-      <g class="badge__drop"><path d="M60 42c6 9 10 14 10 20a10 10 0 0 1-20 0c0-6 4-11 10-20z"/></g>
-    </svg>
+      <figcaption class="hero__cap"><b>Detailing Exterior,</b> puerta izquierda. Foto real de Nemo.</figcaption>
+    </figure>
   </section>
 
-  <!-- Marquee -->
-  <div class="marquee" aria-hidden="true"><div class="marquee__track" data-marquee></div></div>
-
-  <!-- Problema / propuesta -->
-  <section class="why" aria-labelledby="why-title">
-    <h2 id="why-title" class="h2" data-split>Tu precio, al instante.<br><em>Tu pedido, ya armado.</em></h2>
-    <ol class="why__steps">
-      <li data-reveal><span class="why__n">01</span><h3>Elige</h3><p>El tamaño de tu vehículo o lo que quieres limpiar en casa.</p></li>
-      <li data-reveal><span class="why__n">02</span><h3>Calcula</h3><p>Los precios se ajustan solos: por tamaño, por cantidad o por m².</p></li>
-      <li data-reveal><span class="why__n">03</span><h3>Envía</h3><p>Tu cotización llega a WhatsApp con servicio, detalle y total.</p></li>
-    </ol>
+  <!-- 3 · CÓMO FUNCIONA -->
+  <section class="how" aria-labelledby="how-title">
+    <div class="wrap">
+      <div class="how__head">
+        <p class="kicker"><span>00</span>Cómo funciona</p>
+        <h2 id="how-title" class="h2" data-split>Tu precio al instante. Tu pedido, ya armado.</h2>
+      </div>
+      <ol class="how__steps">
+        <li data-reveal><span class="how__n">01</span><h3>Elige</h3><p>El tamaño de tu vehículo o lo que quieres limpiar en casa.</p></li>
+        <li data-reveal><span class="how__n">02</span><h3>Calcula</h3><p>Los precios se ajustan solos: por tamaño, por cantidad o por m².</p></li>
+        <li data-reveal><span class="how__n">03</span><h3>Envía</h3><p>Tu cotización llega a WhatsApp con servicio, detalle y total.</p></li>
+      </ol>
+    </div>
   </section>
 
   <!-- CATÁLOGO -->
   <section id="catalogo" class="catalog" aria-label="Catálogo">
-    <div class="world-switch" role="tablist" aria-label="Elige el tipo de servicio">
-      <button role="tab" id="tab-car" aria-controls="world-car" aria-selected="true" data-world-btn="car">
-        <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-car"/></svg>Autos</button>
-      <button role="tab" id="tab-home" aria-controls="world-home" aria-selected="false" data-world-btn="home">
-        <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-home"/></svg>Hogar y oficina</button>
-      <span class="world-switch__pill" aria-hidden="true"></span>
+    <div class="wrap">
+      <div class="world-switch" role="tablist" aria-label="Elige el tipo de servicio">
+        <button role="tab" id="tab-car" aria-controls="world-car" aria-selected="true" data-world-btn="car"><small>A</small>Autos</button>
+        <button role="tab" id="tab-home" aria-controls="world-home" aria-selected="false" data-world-btn="home"><small>B</small>Hogar y oficina</button>
+        <span class="world-switch__pill" aria-hidden="true"></span>
+      </div>
     </div>
 
     <!-- AUTOS -->
     <div id="world-car" class="world world--car" role="tabpanel" aria-labelledby="tab-car">
-      <div class="sizes" aria-labelledby="sizes-title">
+      <!-- 4 · SELECTOR DE VEHÍCULO -->
+      <section class="sizes wrap" aria-labelledby="sizes-title">
         <div class="sizes__head">
-          <h2 id="sizes-title" class="h2" data-split>¿Qué <em>vehículo</em> tienes?</h2>
-          <p class="muted">Elige el tamaño y todos los precios se ajustan.</p>
+          <p class="kicker"><span>01</span>Tu vehículo</p>
+          <h2 id="sizes-title" class="h2" data-split>¿Qué vehículo tienes?</h2>
+          <p class="lead">Elige el tamaño y todos los precios de esta página se ajustan.</p>
         </div>
-        <div class="sizes__stage">
-          <svg class="sizes__car" viewBox="0 0 200 72" aria-hidden="true"><path class="sizes__body" d=""/><path class="sizes__glass" d=""/><circle class="sizes__w1" r="11" cx="46" cy="60"/><circle class="sizes__w2" r="11" cx="154" cy="60"/><circle class="sizes__h1" r="4" cx="46" cy="60"/><circle class="sizes__h2" r="4" cx="154" cy="60"/></svg>
-          <div class="sizes__floor" aria-hidden="true"></div>
-          <p class="sizes__examples" aria-live="polite"></p>
+        <div class="sizes__stage" aria-hidden="true">
+          <div class="sizes__cars">
+            <svg class="car" data-car="S" viewBox="0 0 640 222"><use href="#car-S"/></svg>
+            <svg class="car" data-car="M" viewBox="0 0 640 222"><use href="#car-M"/></svg>
+            <svg class="car" data-car="L" viewBox="0 0 640 222"><use href="#car-L"/></svg>
+            <svg class="car" data-car="XL" viewBox="0 0 640 222"><use href="#car-XL"/></svg>
+          </div>
+          <div class="sizes__ground"><i class="sizes__shadow"></i></div>
+          <div class="sizes__dim"><span class="sizes__len"><span data-len></span><small>de largo aprox.</small></span></div>
         </div>
         <div class="sizes__picker" role="radiogroup" aria-label="Tamaño de vehículo" data-size-picker></div>
-      </div>
+        <p class="sizes__examples" aria-live="polite"><span>Ejemplos:</span> <b data-size-examples></b></p>
+      </section>
 
-      <div class="sizebar" data-sizebar aria-hidden="true"><span>Precios para:</span><div class="sizebar__chips" data-size-chips></div></div>
-
-      <div class="ladder" data-ladder>
-        <div class="ladder__intro">
-          <p class="eyebrow"><span class="eyebrow__line"></span>Servicios para tu auto</p>
-          <h2 class="h2" data-split>De un lavado rápido a un <em>acabado showroom.</em></h2>
-          <div class="ladder__meter" aria-hidden="true"><span>Nivel de protección</span><div class="ladder__bar"><i></i></div></div>
+      <!-- 5 · SERVICIOS (LISTA DE PRECIOS) -->
+      <section class="services wrap" aria-labelledby="svc-title">
+        <div class="services__head">
+          <p class="kicker"><span>02</span>Servicios para tu auto</p>
+          <h2 id="svc-title" class="h2" data-split>Del lavado rápido al acabado showroom.</h2>
+          <p class="lead">Toca un servicio para ver todo lo que incluye. Precios para <b data-size-name></b>. La línea naranja marca el nivel de protección.</p>
         </div>
-        <div class="ladder__track" data-ladder-track></div>
-      </div>
+        <div class="svc-table">
+          <div class="svc-table__head" aria-hidden="true"><span>N.º</span><span>Servicio</span><span>Qué incluye</span><span>Tiempo</span><span>Precio</span><span></span></div>
+          <div class="svc-table__body" role="list" data-services></div>
+        </div>
+      </section>
 
-      <div class="extras">
-        <h2 class="h3" data-split>Servicios adicionales</h2>
-        <div class="extras__grid" data-extras></div>
-      </div>
+      <!-- 6 · ADICIONALES -->
+      <section class="extras wrap" aria-labelledby="extras-title">
+        <div class="extras__top">
+          <div class="extras__head">
+            <p class="kicker"><span>03</span>Adicionales</p>
+            <h2 id="extras-title" class="h2" data-split>Suma lo que tu auto necesita.</h2>
+          </div>
+          <figure class="extras__fig" data-extras-fig></figure>
+        </div>
+        <div class="extras__list" data-extras></div>
+      </section>
 
-      <section id="planes" class="plans" aria-labelledby="plans-title">
-        <p class="eyebrow"><span class="eyebrow__line"></span>Paquetes mensuales</p>
-        <h2 id="plans-title" class="h2" data-split>Tu auto limpio <em>todo el mes.</em></h2>
+      <!-- 7 · PLANES -->
+      <section id="planes" class="plans wrap" aria-labelledby="plans-title">
+        <div class="plans__head">
+          <p class="kicker"><span>04</span>Paquetes mensuales</p>
+          <h2 id="plans-title" class="h2" data-split>Tu auto limpio todo el mes.</h2>
+        </div>
         <div class="plans__grid" data-plans></div>
       </section>
     </div>
 
-    <!-- HOGAR Y OFICINA -->
+    <!-- 8 · HOGAR Y OFICINA -->
     <div id="world-home" class="world world--home" role="tabpanel" aria-labelledby="tab-home" hidden>
-      <div class="home-intro">
-        <p class="eyebrow"><span class="eyebrow__line"></span>Nemo Home &amp; Office</p>
-        <h2 class="h2" data-split>Desliza y mira <em>el antes y después.</em></h2>
+      <section class="home-intro wrap" aria-labelledby="home-title">
+        <div class="home-intro__head">
+          <p class="kicker"><span>01</span>Nemo Home &amp; Office</p>
+          <h2 id="home-title" class="h2" data-split>Desliza y mira el antes y después.</h2>
+          <p class="lead">Arrastra la línea para comparar alfombras, muebles y colchones antes y después de la limpieza.</p>
+        </div>
         <div class="ba-rail" data-ba-rail></div>
-      </div>
-      <div class="calc-grid" data-home></div>
+      </section>
+      <section class="home-calcs wrap" aria-labelledby="calc-title">
+        <div class="home-calcs__head">
+          <p class="kicker"><span>02</span>Calcula tu servicio</p>
+          <h2 id="calc-title" class="h2" data-split>Precio por pieza, por cantidad o por m².</h2>
+        </div>
+        <div class="calc-grid" data-home></div>
+      </section>
     </div>
   </section>
 
-  <!-- COBERTURA -->
+  <!-- 9 · COBERTURA -->
   <section id="cobertura" class="coverage" aria-labelledby="cov-title">
-    <div class="coverage__copy">
-      <p class="eyebrow"><span class="eyebrow__line"></span>Cobertura</p>
-      <h2 id="cov-title" class="h2" data-split>Atendemos en <em>Samborondón y Vía a la Costa.</em></h2>
-      <ul class="coverage__list" data-coverage></ul>
+    <div class="wrap coverage__in">
+      <div class="coverage__copy">
+        <p class="kicker"><span>05</span>Cobertura</p>
+        <h2 id="cov-title" class="h2" data-split>Atendemos en Samborondón y Vía a la Costa.</h2>
+        <ol class="coverage__list" data-coverage></ol>
+        <p class="coverage__note">¿Tu dirección está cerca? <a data-wa="Hola Nemo, ¿atienden en mi sector?" href="#" target="_blank" rel="noopener">Pregúntanos por WhatsApp</a>.</p>
+      </div>
+      <figure class="map" data-map>
+        <div class="map__canvas" data-map-canvas role="region" aria-label="Mapa de las zonas de cobertura de Nemo en Guayaquil y Samborondón"></div>
+        <figcaption class="map__cap">Zonas aproximadas. Usa dos dedos para mover el mapa.</figcaption>
+      </figure>
     </div>
-    <svg class="map" viewBox="0 0 400 320" role="img" aria-label="Mapa esquemático de Guayaquil con las zonas de cobertura de Nemo">
-      <defs>
-        <radialGradient id="glow"><stop offset="0" stop-color="var(--accent)" stop-opacity=".55"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></radialGradient>
-      </defs>
-      <g class="map__grid"></g>
-      <path class="map__river" d="M282 0 C 300 60, 268 110, 290 160 S 330 250, 312 320"/>
-      <path class="map__river map__river--2" d="M232 0 C 236 50, 250 90, 262 130 S 286 160, 290 160"/>
-      <path class="map__road" d="M40 150 C 110 150, 160 160, 230 175 S 270 190, 300 175"/>
-      <path class="map__road" d="M300 175 C 320 140, 330 110, 345 70"/>
-      <path class="map__road map__road--minor" d="M230 175 C 230 210, 240 250, 236 300"/>
-      <g class="map__zone" transform="translate(338 92)"><circle r="48" fill="url(#glow)"/><circle class="map__pulse" r="8"/><circle class="map__pin" r="6"/><text x="0" y="-18" text-anchor="middle">Vía Samborondón</text></g>
-      <g class="map__zone" transform="translate(130 150)"><circle r="56" fill="url(#glow)"/><circle class="map__pulse" r="8"/><circle class="map__pin" r="6"/><text x="0" y="-18" text-anchor="middle">Ceibos / Vía la Costa</text></g>
-      <text class="map__city" x="236" y="236" text-anchor="middle">Guayaquil</text>
-    </svg>
   </section>
 
-  <!-- CTA FINAL -->
+  <!-- 10 · CTA FINAL -->
   <section class="final" aria-labelledby="final-title">
-    <img class="final__logo" src="assets/logo-orange.webp" alt="" width="462" height="335" loading="lazy">
-    <h2 id="final-title" class="h1" data-split>¿Listo para ver <em>la diferencia?</em></h2>
-    <div class="final__ctas">
-      <a class="btn btn--wa magnetic" data-wa="Hola Nemo, quiero agendar un servicio." href="#" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wa"/></svg><span data-text="contact.whatsappDisplay"></span></a>
-      <a class="btn btn--ghost magnetic" data-ig href="#" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-ig"/></svg><span>@<span data-text="contact.instagram"></span></span></a>
+    <div class="wrap final__in">
+      <img class="final__logo" src="assets/logo-orange.webp" alt="" width="462" height="335" loading="lazy">
+      <div class="final__copy">
+        <h2 id="final-title" class="h1" data-split>¿Listo para ver la diferencia?</h2>
+        <p class="lead">Escríbenos, cuéntanos qué necesitas y agenda tu servicio.</p>
+        <div class="final__ctas">
+          <a class="btn btn--wa" data-wa="Hola Nemo, quiero agendar un servicio." href="#" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wa"/></svg><span data-text="contact.whatsappDisplay"></span></a>
+          <a class="btn btn--ghost-light" data-ig href="#" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-ig"/></svg><span>@<span data-text="contact.instagram"></span></span></a>
+        </div>
+      </div>
     </div>
   </section>
 </main>
 
 <footer class="footer">
-  <p data-text="meta.demoBanner"></p>
-  <p class="muted">Precios tomados de los catálogos de Nemo. Sujetos a confirmación.</p>
+  <div class="wrap footer__in">
+    <p data-text="meta.demoBanner"></p>
+    <p>Precios tomados de los catálogos de Nemo. Sujetos a confirmación.</p>
+    <p>Mapa: © colaboradores de OpenStreetMap · OpenFreeMap.</p>
+  </div>
 </footer>
+</div>
 
-<!-- Carrito / cotización -->
+<!-- 11 · COTIZADOR -->
+<div class="cart__scrim" data-cart-scrim></div>
 <aside class="cart" data-cart aria-label="Tu cotización">
-  <button class="cart__bar" type="button" aria-expanded="false" aria-controls="cart-sheet" data-cart-toggle>
-    <span class="cart__count" data-cart-count>0</span>
-    <span class="cart__label">Tu cotización</span>
-    <span class="cart__total" aria-live="polite" data-cart-total>$0</span>
-    <svg class="cart__chev" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>
-  </button>
+  <div class="cart__bar">
+    <button class="cart__toggle" type="button" aria-expanded="false" aria-controls="cart-sheet" data-cart-toggle>
+      <span class="cart__title">Tu cotización</span>
+      <span class="cart__sum"><b class="cart__count" data-cart-count>0</b> <span data-cart-unit>ítems</span> · <b class="cart__total" aria-live="polite" data-cart-total>$0</b></span>
+      <svg class="cart__chev" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-chev"/></svg>
+    </button>
+    <a class="cart__go" data-cart-quick href="#" target="_blank" rel="noopener">Enviar</a>
+  </div>
   <div id="cart-sheet" class="cart__sheet" data-cart-sheet hidden>
     <ul class="cart__lines" data-cart-lines></ul>
     <p class="cart__note" data-cart-note hidden></p>
+    <div class="cart__sumrow"><span>Total estimado</span><b data-cart-total2>$0</b></div>
     <a class="btn btn--wa btn--block" data-cart-send href="#" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wa"/></svg>Enviar por WhatsApp</a>
-    <button class="cart__clear" type="button" data-cart-clear>Vaciar</button>
+    <button class="cart__clear" type="button" data-cart-clear>Vaciar cotización</button>
   </div>
 </aside>
-<a class="fab magnetic" data-wa="Hola Nemo, quiero información sobre sus servicios." href="#" target="_blank" rel="noopener" aria-label="Escribir a Nemo por WhatsApp"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wa"/></svg></a>
+<a class="fab" data-wa="Hola Nemo, quiero información sobre sus servicios." href="#" target="_blank" rel="noopener" aria-label="Escribir a Nemo por WhatsApp"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wa"/></svg></a>
 <div class="toast" role="status" aria-live="polite" data-toast></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2a9.9 9.9 0 0 0-8.45 15.07L2.5 21.5l4.55-1.07A9.9 9.9 0 1 0 12.04 2zm0 18.03a8.1 8.1 0 0 1-4.14-1.13l-.3-.18-2.7.64.66-2.62-.2-.32a8.12 8.12 0 1 1 6.68 3.61zm4.46-6.08c-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.77.95-.14.16-.28.18-.53.06a6.66 6.66 0 0 1-1.95-1.2 7.3 7.3 0 0 1-1.35-1.68c-.14-.24 0-.37.1-.49.11-.11.25-.28.37-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.32-.75-1.81-.2-.47-.4-.41-.55-.42h-.47a.9.9 0 0 0-.65.3 2.74 2.74 0 0 0-.85 2.04 4.76 4.76 0 0 0 1 2.53c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.1.16 1.52.1.46-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28z"/></symbol>
   <symbol id="i-ig" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm5 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm5.5-1.5h.01"/></symbol>
-  <symbol id="i-car" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M3 16v-3l2-5h14l2 5v3M3 16h18M6.5 16v2.5M17.5 16v2.5M6 12.5h.01M18 12.5h.01"/></symbol>
-  <symbol id="i-home" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
-  <symbol id="i-hand" viewBox="0 0 24 24"><path fill="currentColor" d="M9 11.2V5.5a1.5 1.5 0 0 1 3 0v4.6l.3-.1a1.5 1.5 0 0 1 1.9.9l.1.3a1.5 1.5 0 0 1 2.4.6l.1.4a1.5 1.5 0 0 1 2.2 1.3V17a5 5 0 0 1-5 5h-1.6a5 5 0 0 1-4-2l-3-4a1.5 1.5 0 0 1 2.3-1.9L9 15.3z"/></symbol>
-  <symbol id="i-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
-  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7"/></symbol>
-  <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></symbol>
-  <symbol id="i-clock" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M9 12.5V4.8a1.6 1.6 0 0 1 3.2 0v6.4m0-1.2a1.6 1.6 0 0 1 3.2 0v1.4m0-.6a1.6 1.6 0 0 1 3.2 0V13m0-.4a1.5 1.5 0 0 1 3 0v3.1A6.3 6.3 0 0 1 15.3 22h-1.6a6.2 6.2 0 0 1-5-2.5l-3.2-4.3a1.6 1.6 0 0 1 2.5-2L9 14.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="car-S" viewBox="0 -214 640 222"><g transform="translate(120 0)"><path d="M8 -22C3 -24 2 -30 2 -38L3 -66C4 -76 8 -84 12 -90L30 -124C34 -132 44 -138 58 -140C110 -147 160 -148 200 -145C214 -144 226 -139 238 -132L292 -101C320 -97 350 -93 372 -88C388 -84 396 -78 398 -70L400 -46C400 -34 398 -26 392 -22L366.4 -20A38 38 0 1 0 293.6 -20L108.4 -20A38 38 0 1 0 35.6 -20Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M74 -100L80 -132C120 -139 168 -141 202 -139C213 -138 222 -134 230 -129L280 -98Z" style="fill:var(--car-glass)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M177 -139L184 -139L184 -98L177 -98Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M14 -80C120 -83 260 -86 392 -79" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M284 -96C287 -72 288 -46 287 -24M180 -98L180 -21M78 -100L104 -52M112 -28L286 -28" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M234 -88h16M134 -88h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M374 -86C386 -84 394 -80 397 -72L384 -71C378 -75 375 -80 374 -86Z" style="fill:var(--car-lamp)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M6 -66L12 -88L22 -88L18 -66Z" style="fill:var(--car-lamp)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M268 -100C270 -108 278 -111 285 -109L288 -100Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M382 -34L399 -34" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><g style="transform-box:fill-box;transform-origin:center;transform:rotate(var(--spin,0deg));transition:transform var(--spin-t,.9s) cubic-bezier(.22,1,.36,1)"><circle cx="72" cy="-31" r="31" style="fill:var(--car-tire)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="72" cy="-31" r="19.2" style="fill:var(--car-rim)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M72.0 -36.6L72.0 -48.7M77.3 -32.7L88.8 -36.5M75.3 -26.5L82.4 -16.7M68.7 -26.5L61.6 -16.7M66.7 -32.7L55.2 -36.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="72" cy="-31" r="4.6" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></g><g style="transform-box:fill-box;transform-origin:center;transform:rotate(var(--spin,0deg));transition:transform var(--spin-t,.9s) cubic-bezier(.22,1,.36,1)"><circle cx="330" cy="-31" r="31" style="fill:var(--car-tire)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="330" cy="-31" r="19.2" style="fill:var(--car-rim)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M330.0 -36.6L330.0 -48.7M335.3 -32.7L346.8 -36.5M333.3 -26.5L340.4 -16.7M326.7 -26.5L319.6 -16.7M324.7 -32.7L313.2 -36.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="330" cy="-31" r="4.6" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></g></g></symbol>
+  <symbol id="car-M" viewBox="0 -214 640 222"><g transform="translate(95 0)"><path d="M70 -160L74 -166L268 -170L272 -165" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M10 -26C4 -28 2 -34 2 -44L3 -78C4 -88 8 -96 13 -104L34 -144C40 -152 50 -156 64 -157C130 -164 220 -167 286 -164C300 -163 310 -159 318 -153L370 -114C396 -110 420 -106 436 -100C446 -96 450 -88 450 -78L450 -48C450 -36 446 -28 440 -26L401.3 -24A43 43 0 1 0 318.7 -24L129.3 -24A43 43 0 1 0 46.7 -24Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M44 -118L40 -140C46 -148 54 -151 66 -152C130 -158 220 -160 284 -158C296 -157 304 -154 312 -148L358 -112Z" style="fill:var(--car-glass)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M76 -117L84 -153L104 -155L98 -115Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M214 -159L222 -159L222 -113L214 -113Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M14 -96C140 -101 300 -105 442 -97" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M342 -112C330 -96 318 -76 316 -30M218 -113L218 -27M98 -116L117 -67M132 -38L314 -38" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M406.5 -24A48 48 0 1 0 313.5 -24M134.5 -24A48 48 0 1 0 41.5 -24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M280 -104h18M158 -104h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M418 -104C432 -102 444 -98 448 -90L432 -89C424 -94 420 -98 418 -104Z" style="fill:var(--car-lamp)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M10 -98L18 -114L32 -114L28 -98Z" style="fill:var(--car-lamp)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M346 -116C348 -126 357 -129 364 -127L367 -116Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M434 -40L449 -40" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><g style="transform-box:fill-box;transform-origin:center;transform:rotate(var(--spin,0deg));transition:transform var(--spin-t,.9s) cubic-bezier(.22,1,.36,1)"><circle cx="88" cy="-36" r="36" style="fill:var(--car-tire)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="88" cy="-36" r="22.3" style="fill:var(--car-rim)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M88.0 -42.5L88.0 -56.5M94.2 -38.0L107.5 -42.3M91.8 -30.8L100.1 -19.4M84.2 -30.8L75.9 -19.4M81.8 -38.0L68.5 -42.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="88" cy="-36" r="5.4" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></g><g style="transform-box:fill-box;transform-origin:center;transform:rotate(var(--spin,0deg));transition:transform var(--spin-t,.9s) cubic-bezier(.22,1,.36,1)"><circle cx="360" cy="-36" r="36" style="fill:var(--car-tire)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="360" cy="-36" r="22.3" style="fill:var(--car-rim)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M360.0 -42.5L360.0 -56.5M366.2 -38.0L379.5 -42.3M363.8 -30.8L372.1 -19.4M356.2 -30.8L347.9 -19.4M353.8 -38.0L340.5 -42.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="360" cy="-36" r="5.4" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></g></g></symbol>
+  <symbol id="car-L" viewBox="0 -214 640 222"><g transform="translate(75 0)"><path d="M40 -183L44 -190L300 -192L304 -185" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M8 -30C3 -32 2 -38 2 -46L2 -166C2 -176 8 -181 18 -182C120 -185 240 -186 330 -184C340 -184 346 -181 352 -176L390 -132C420 -130 450 -128 474 -125C484 -124 488 -118 489 -110L490 -52C490 -40 486 -32 480 -30L428.7 -28A46 46 0 1 0 339.3 -28L148.7 -28A46 46 0 1 0 59.3 -28Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M16 -130L16 -168C16 -173 20 -176 26 -176C130 -178 240 -179 326 -178C334 -178 340 -175 344 -170L378 -130Z" style="fill:var(--car-glass)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M92 -131L92 -177L112 -177L112 -131Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M236 -179L244 -179L244 -130L236 -130Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M4 -114C160 -115 340 -116 487 -112" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M342 -128L338 -32M240 -130L240 -31M112 -131L140 -68" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M156 -27L334 -27L334 -19L156 -19Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M302 -120h20M190 -120h20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M452 -124C466 -122 478 -120 486 -116L488 -104L466 -104C458 -110 454 -116 452 -124Z" style="fill:var(--car-lamp)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M3 -112L12 -112L12 -150L3 -150Z" style="fill:var(--car-lamp)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M368 -134C370 -146 379 -149 386 -147L389 -134Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M470 -52L489 -52" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><g style="transform-box:fill-box;transform-origin:center;transform:rotate(var(--spin,0deg));transition:transform var(--spin-t,.9s) cubic-bezier(.22,1,.36,1)"><circle cx="104" cy="-39" r="39" style="fill:var(--car-tire)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="104" cy="-39" r="24.2" style="fill:var(--car-rim)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M104.0 -46.0L104.0 -61.2M110.7 -41.2L125.2 -45.9M108.1 -33.3L117.1 -21.0M99.9 -33.3L90.9 -21.0M97.3 -41.2L82.8 -45.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="104" cy="-39" r="5.8" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></g><g style="transform-box:fill-box;transform-origin:center;transform:rotate(var(--spin,0deg));transition:transform var(--spin-t,.9s) cubic-bezier(.22,1,.36,1)"><circle cx="384" cy="-39" r="39" style="fill:var(--car-tire)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="384" cy="-39" r="24.2" style="fill:var(--car-rim)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M384.0 -46.0L384.0 -61.2M390.7 -41.2L405.2 -45.9M388.1 -33.3L397.1 -21.0M379.9 -33.3L370.9 -21.0M377.3 -41.2L362.8 -45.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="384" cy="-39" r="5.8" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></g></g></symbol>
+  <symbol id="car-XL" viewBox="0 -214 640 222"><g transform="translate(25 0)"><path d="M8 -34C3 -36 2 -42 2 -50L2 -124C2 -128 4 -130 8 -130L222 -130C228 -130 230 -134 230 -140L232 -184C233 -192 240 -196 250 -196L350 -197C360 -197 366 -194 372 -188L412 -142C460 -140 520 -138 560 -134C576 -132 584 -128 586 -120L590 -60C590 -44 586 -36 580 -34L542.2 -32A49 49 0 1 0 445.8 -32L176.2 -32A49 49 0 1 0 79.8 -32Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M244 -142L244 -182C244 -186 247 -189 252 -189L346 -190C354 -190 358 -187 362 -182L400 -142Z" style="fill:var(--car-glass)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M318 -190L326 -190L326 -142L318 -142Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M4 -122L226 -122M12 -126L12 -40M228 -128L228 -36" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M10 -86C200 -86 400 -86 588 -83" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M408 -140L414 -62C416 -50 420 -44 430 -42M322 -142L322 -36M238 -142L238 -38M180 -42L442 -42" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M368 -130h20M268 -130h20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M556 -132C570 -130 580 -127 585 -120L586 -106L566 -106C560 -114 557 -122 556 -132Z" style="fill:var(--car-lamp)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M2 -100L10 -100L10 -124L2 -124Z" style="fill:var(--car-lamp)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M390 -146C391 -159 401 -162 409 -160L412 -146Z" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M587 -96L589 -62" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><g style="transform-box:fill-box;transform-origin:center;transform:rotate(var(--spin,0deg));transition:transform var(--spin-t,.9s) cubic-bezier(.22,1,.36,1)"><circle cx="128" cy="-41" r="41" style="fill:var(--car-tire)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="128" cy="-41" r="25.4" style="fill:var(--car-rim)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M128.0 -48.4L128.0 -64.4M135.0 -43.3L150.2 -48.2M132.3 -35.0L141.7 -22.1M123.7 -35.0L114.3 -22.1M121.0 -43.3L105.8 -48.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="128" cy="-41" r="6.1" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></g><g style="transform-box:fill-box;transform-origin:center;transform:rotate(var(--spin,0deg));transition:transform var(--spin-t,.9s) cubic-bezier(.22,1,.36,1)"><circle cx="494" cy="-41" r="41" style="fill:var(--car-tire)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="494" cy="-41" r="25.4" style="fill:var(--car-rim)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M494.0 -48.4L494.0 -64.4M501.0 -43.3L516.2 -48.2M498.3 -35.0L507.7 -22.1M489.7 -35.0L480.3 -22.1M487.0 -43.3L471.8 -48.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="494" cy="-41" r="6.1" style="fill:var(--car-body)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></g></g></symbol>
 </svg>
 
-<script type="application/json" id="data">{"meta":{"title":"Nemo Cleaning Services · Demo","description":"Demo de diseño preparado por IGNIS para Nemo Cleaning Services. No es el sitio oficial.","demoBanner":"Demo de diseño preparado por IGNIS para Nemo Cleaning Services. No es el sitio oficial.","lang":"es-EC","demoBannerShort":"Demo de IGNIS para Nemo · No es el sitio oficial"},"brand":{"name":"Nemo","full":"Nemo Cleaning Services","tagline":"Más que limpieza, restauramos valor","colors":{"orange":"#F05E22","carbon":"#151618","navy":"#0C2136","blue":"#014A8E"},"logoWhite":"assets/logo-white.webp","logoOrange":"assets/logo-orange.webp"},"contact":{"whatsapp":"593967771287","whatsappDisplay":"096 777 1287","instagram":"nemo_ec","coverage":["Vía Samborondón","Ceibos / Vía la Costa"]},"hero":{"before":"assets/door-before-full.webp","after":"assets/door-after-full.webp","hint":"Pasa el dedo para limpiar"},"sizes":[{"id":"S","label":"Pequeño","examples":"Kia Rio, Hyundai Accent, Chevrolet Spark"},{"id":"M","label":"Mediano","examples":"Hyundai Tucson, Kia Sportage, Nissan X-Trail"},{"id":"L","label":"Grande (SUV)","examples":"Toyota Prado, Fortuner, Explorer"},{"id":"XL","label":"Extra Grande","examples":"Vans, Pick Up, Ford F150"}],"car":{"ladder":[{"id":"classic","n":1,"name":"Classic Wash","level":1,"bullets":["Limpieza de carrocería","Aspirada interna","Limpieza de tableros, puertas y asientos","Aplicación de brillo en llantas","Aromatización"],"price":{"S":8,"M":10,"L":12,"XL":15},"duration":"1 hora","addon":{"name":"Encerada","price":5}},{"id":"premium","n":2,"name":"Premium Wash","level":2,"bullets":["Baño de espuma y limpieza total externa","Tratamiento removedor de grasa en partes plásticas y aros","Aspirada interna de asientos, alfombras y puntos ciegos del vehículo","Limpieza del techo","Desinfección de la cabina con ozono","Encerada","Ambientador"],"price":{"S":35,"M":45,"L":55,"XL":65},"duration":"2 horas"},{"id":"detailing-pro","n":3,"name":"Detailing Pro","level":3,"lead":"Lavado al detalle de todas las zonas y accesorios del vehículo. Remueve suciedades en zonas estancadas o puntos ciegos que pueden generar deterioro o malos olores.","note":"Línea Chemical Brothers, Meguiar's y microfibra Kirkland (Made in USA).","bulletsTitle":"9 puntos a tratar","bullets":["Descontaminación de carrocería con sistema Clay Bar","Limpieza al detalle con spray y brocha: volante, panel, asientos, techos, postes, piezas plásticas, emblemas cromados, rieles y neumáticos","Aspirado total filtrado de puntos ciegos","Desinfección de olores y bacterias","Baño interno de vapor","Limpieza de asientos (removidos del vehículo)","Hidratación de cueros y tapizados","Encerada","Ambientador"],"price":{"S":85,"M":85,"L":95,"XL":105},"duration":null},{"id":"detailing-interior","n":4,"name":"Detailing Interior","level":3,"bullets":["Limpieza profunda de cabina","Eliminación de suciedad acumulada","Desinfección y restauración de superficies internas"],"price":{"S":40,"M":40,"L":45,"XL":50},"duration":null,"img":"interior"},{"id":"detailing-exterior","n":5,"name":"Detailing Exterior","level":3,"bullets":["Lavado profundo","Descontaminación","Restauración del brillo de la pintura"],"price":{"S":40,"M":40,"L":45,"XL":50},"duration":"1 hora","ba":["door-before-344","door-after-344"]},{"id":"silver","n":6,"name":"Ceramic Pro · Paquete Silver","family":"Ceramic Pro Coating Grafeno 9H","level":4,"lead":"Revestimiento cerámico de grafeno en las superficies externas visibles: carrocería, aros, vidrios, faros y plásticos externos.","bullets":["Micropulido efecto espejo","Protección de carrocería con capa de brillo","Recubrimiento cerámico en aros","Protección en parabrisas y retrovisores","Protección en faros","Protección en partes plásticas externas"],"price":{"S":160,"M":160,"L":200,"XL":250},"duration":null,"img":"wheel"},{"id":"gold","n":6,"name":"Ceramic Pro · Paquete Gold","family":"Ceramic Pro Coating Grafeno 9H","level":5,"bullets":["Micropulido tipo espejo con efecto hidrofóbico","Protección contra rayones leves","Protección UV","Recubrimiento cerámico en aros","Protección en parabrisas y retrovisores","Protección en faros","Protección en partes plásticas externas"],"price":{"S":250,"M":250,"L":300,"XL":360},"duration":"6 horas","img":"coating"},{"id":"signature","n":7,"name":"Signature Gtechniq Process","kicker":"Efecto showroom","level":6,"lead":"Eleva tu vehículo a un nivel superior mediante tecnología cerámica profesional.","bullets":["Brillo profundo tipo “espejo líquido”","Protección contra rayos UV, químicos y contaminación","Superficie ultra hidrofóbica (efecto repelente al agua)","Mayor facilidad de limpieza","Conservación del valor del vehículo","Acabado tipo exhibición (showroom finish)"],"price":{"S":350,"M":350,"L":455,"XL":545},"duration":null,"img":"signature"}],"extras":[{"id":"glass","name":"Desinfección de vidrios","detail":"Incluye Classic Wash","price":{"S":35,"M":35,"L":45,"XL":null},"img":"glass-ba"},{"id":"seats-fabric","name":"Limpieza de asientos de tela","fixed":40},{"id":"leather","name":"Limpieza e hidratación de cuero","fixed":50},{"id":"belts","name":"Limpieza y desinfección de cinturones","fixed":20},{"id":"odor","name":"Eliminación de olores (AirBomb Meguiar's)","fixed":25},{"id":"plastics","name":"Tratamiento de plásticos","options":[{"label":"Externo","price":15},{"label":"Interno","price":15},{"label":"Combo","price":25}]},{"id":"roof","name":"Limpieza de techo","fixed":30},{"id":"floor","name":"Limpieza de piso","options":[{"label":"Básico","price":40},{"label":"Con desmontaje","price":60}]},{"id":"wax","name":"Encerada con máquina","fixed":15}],"plans":[{"id":"plan-basic","name":"Mantenimiento Básico","includes":"4 lavados clásicos + 1 encerada gratis","baseService":"classic","baseCount":4,"price":{"S":30,"M":35,"L":42,"XL":55}},{"id":"plan-premium","name":"Mantenimiento Premium","includes":"2 lavados premium","baseService":"premium","baseCount":2,"price":{"S":60,"M":75,"L":85,"XL":100}}]},"home":{"services":[{"id":"rugs","name":"Limpieza de alfombras","time":"Entrega en 24 a 48 horas","bullets":["Limpieza profunda","Secado controlado","Eliminación de manchas (cuando es posible)","Desinfección","Aromatización (neutra o personalizada)"],"pricing":{"type":"options","unit":"alfombra","options":[{"label":"1,80 x 0,60 m","price":15},{"label":"1,80 / 2 x 1,20 m","price":20},{"label":"2,40 x 1,80 m","price":30},{"label":"2,40 x 3,00 m","price":35},{"label":"Oversize","price":40}]},"ba":["rug-before-480","rug-after-480"]},{"id":"furniture","name":"Limpieza de muebles","time":"Ejecución + secado: 2 a 5 horas","bullets":["Eliminación de ácaros con sistema de ozono","Luz UV","Inyección y succión profunda"],"pricing":{"type":"options","unit":"pieza","options":[{"label":"Silla de tela","price":6.5},{"label":"Silla mixta","price":7},{"label":"Sofá 1 puesto","price":15,"max":20},{"label":"Sofá 2 puestos","price":30,"max":35},{"label":"Sofá 3 puestos","price":40,"max":50},{"label":"Seccional (L / sala completa)","price":65,"max":90}]},"ba":["sofa-before-480","sofa-after-480"]},{"id":"mattress","name":"Limpieza de colchones","time":"Incluye limpieza de 2 almohadas","bullets":["Eliminación de ácaros con ozono","Luz UV","Inyección y extracción profunda"],"pricing":{"type":"options","unit":"colchón","options":[{"label":"Twin","price":20},{"label":"Full","price":25},{"label":"Queen","price":30},{"label":"King","price":35}]},"ba":["mattress-before-353","mattress-after-353"]},{"id":"windows","name":"Limpieza de ventanales","bullets":["Precio por unidad que baja según la cantidad"],"pricing":{"type":"tiers","unit":"ventanal","min":2,"default":4,"tiers":[{"from":2,"to":5,"price":8,"label":"2 a 5"},{"from":6,"to":10,"price":6.5,"label":"6 a 10"},{"from":11,"to":null,"price":5,"label":"Más de 10"}]}},{"id":"bathrooms","name":"Desinfección de sanitarios","bullets":["Vapor a alta temperatura","Eliminación de manchas amarillas","Limpieza de puntos ciegos","Desinfección completa del área"],"pricing":{"type":"tiers","unit":"baño","min":1,"default":2,"tiers":[{"from":1,"to":1,"price":25,"label":"1 baño"},{"from":2,"to":3,"price":20,"label":"2 a 3"},{"from":4,"to":null,"price":18,"label":"4 o más"}]}},{"id":"patios","name":"Limpieza de patios y callejones","time":"Tiempo: 1 a 3 horas","bullets":["Servicio integral según nivel de suciedad","Uso de químicos según necesidad","Hidrolavado","Desinfección"],"pricing":{"type":"per_m2","default":50,"plans":[{"label":"Basic","price":1.1},{"label":"Medium","price":1.6},{"label":"Intense (moho / maleza)","price":2.5}]}},{"id":"offices","name":"Limpieza de oficinas","bullets":["Limpieza general","Aspirado","Desinfección de sanitarios","Ozonificación","Limpieza de ventanales","Aromatización"],"idealFor":["Mantenimiento mensual","Entrega de oficinas","Post-construcción"],"pricing":{"type":"per_m2","default":80,"plans":[{"label":"Básico","price":2.5},{"label":"Profundo","price":3}],"monthly":"Plan mensual con tarifa especial"},"img":"office"},{"id":"kids","name":"Accesorios infantiles","bullets":["Limpieza y desinfección segura"],"pricing":{"type":"options","unit":"pieza","options":[{"label":"Tapetes / mats","price":15},{"label":"Car seat","price":10},{"label":"Stroller simple","price":10},{"label":"Stroller doble","price":15}]}}]}}</script>
+<script type="application/json" id="data">{"meta":{"title":"Nemo Cleaning Services · Demo","description":"Demo de diseño preparado por IGNIS para Nemo Cleaning Services. No es el sitio oficial.","demoBanner":"Demo de diseño preparado por IGNIS para Nemo Cleaning Services. No es el sitio oficial.","lang":"es-EC","demoBannerShort":"Demo de IGNIS para Nemo · No es el sitio oficial"},"brand":{"name":"Nemo","full":"Nemo Cleaning Services","tagline":"Más que limpieza, restauramos valor","colors":{"orange":"#F05E22","carbon":"#151618","navy":"#0C2136","blue":"#014A8E"},"logoWhite":"assets/logo-white.webp","logoOrange":"assets/logo-orange.webp"},"contact":{"whatsapp":"593967771287","whatsappDisplay":"096 777 1287","instagram":"nemo_ec","coverage":["Vía Samborondón","Ceibos / Vía la Costa"],"geo":{"note":"Polígonos aproximados, confirmar con Nemo","center":[-79.9,-2.13],"zoom":11,"areas":{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"name":"Vía Samborondón","detail":"Desde La Puntilla hasta Ciudad Celeste","pin":[-79.866,-2.112]},"geometry":{"type":"Polygon","coordinates":[[[-79.889,-2.161],[-79.885,-2.14],[-79.879,-2.116],[-79.874,-2.094],[-79.869,-2.068],[-79.849,-2.066],[-79.853,-2.093],[-79.858,-2.116],[-79.863,-2.14],[-79.869,-2.163],[-79.889,-2.161]]]}},{"type":"Feature","properties":{"name":"Ceibos / Vía la Costa","detail":"Desde Los Ceibos hasta Puerto Azul","pin":[-79.988,-2.177]},"geometry":{"type":"Polygon","coordinates":[[[-79.942,-2.156],[-79.97,-2.161],[-80.001,-2.17],[-80.034,-2.177],[-80.036,-2.199],[-80.001,-2.193],[-79.97,-2.186],[-79.944,-2.184],[-79.942,-2.156]]]}}]}}},"hero":{"before":"assets/door-before-full.webp","after":"assets/door-after-full.webp","hint":"Pasa el dedo para limpiar"},"sizes":[{"id":"S","label":"Pequeño","examples":"Kia Rio, Hyundai Accent, Chevrolet Spark","length_m":4},{"id":"M","label":"Mediano","examples":"Hyundai Tucson, Kia Sportage, Nissan X-Trail","length_m":4.5},{"id":"L","label":"Grande (SUV)","examples":"Toyota Prado, Fortuner, Explorer","length_m":4.9},{"id":"XL","label":"Extra Grande","examples":"Vans, Pick Up, Ford F150","length_m":5.9}],"car":{"ladder":[{"id":"classic","n":1,"name":"Classic Wash","level":1,"bullets":["Limpieza de carrocería","Aspirada interna","Limpieza de tableros, puertas y asientos","Aplicación de brillo en llantas","Aromatización"],"price":{"S":8,"M":10,"L":12,"XL":15},"duration":"1 hora","addon":{"name":"Encerada","price":5}},{"id":"premium","n":2,"name":"Premium Wash","level":2,"bullets":["Baño de espuma y limpieza total externa","Tratamiento removedor de grasa en partes plásticas y aros","Aspirada interna de asientos, alfombras y puntos ciegos del vehículo","Limpieza del techo","Desinfección de la cabina con ozono","Encerada","Ambientador"],"price":{"S":35,"M":45,"L":55,"XL":65},"duration":"2 horas"},{"id":"detailing-pro","n":3,"name":"Detailing Pro","level":3,"lead":"Lavado al detalle de todas las zonas y accesorios del vehículo. Remueve suciedades en zonas estancadas o puntos ciegos que pueden generar deterioro o malos olores.","note":"Línea Chemical Brothers, Meguiar's y microfibra Kirkland (Made in USA).","bulletsTitle":"9 puntos a tratar","bullets":["Descontaminación de carrocería con sistema Clay Bar","Limpieza al detalle con spray y brocha: volante, panel, asientos, techos, postes, piezas plásticas, emblemas cromados, rieles y neumáticos","Aspirado total filtrado de puntos ciegos","Desinfección de olores y bacterias","Baño interno de vapor","Limpieza de asientos (removidos del vehículo)","Hidratación de cueros y tapizados","Encerada","Ambientador"],"price":{"S":85,"M":85,"L":95,"XL":105},"duration":null},{"id":"detailing-interior","n":4,"name":"Detailing Interior","level":3,"bullets":["Limpieza profunda de cabina","Eliminación de suciedad acumulada","Desinfección y restauración de superficies internas"],"price":{"S":40,"M":40,"L":45,"XL":50},"duration":null,"img":"interior"},{"id":"detailing-exterior","n":5,"name":"Detailing Exterior","level":3,"bullets":["Lavado profundo","Descontaminación","Restauración del brillo de la pintura"],"price":{"S":40,"M":40,"L":45,"XL":50},"duration":"1 hora","ba":["door-before-344","door-after-344"]},{"id":"silver","n":6,"name":"Ceramic Pro · Paquete Silver","family":"Ceramic Pro Coating Grafeno 9H","level":4,"lead":"Revestimiento cerámico de grafeno en las superficies externas visibles: carrocería, aros, vidrios, faros y plásticos externos.","bullets":["Micropulido efecto espejo","Protección de carrocería con capa de brillo","Recubrimiento cerámico en aros","Protección en parabrisas y retrovisores","Protección en faros","Protección en partes plásticas externas"],"price":{"S":160,"M":160,"L":200,"XL":250},"duration":null,"img":"wheel"},{"id":"gold","n":6,"name":"Ceramic Pro · Paquete Gold","family":"Ceramic Pro Coating Grafeno 9H","level":5,"bullets":["Micropulido tipo espejo con efecto hidrofóbico","Protección contra rayones leves","Protección UV","Recubrimiento cerámico en aros","Protección en parabrisas y retrovisores","Protección en faros","Protección en partes plásticas externas"],"price":{"S":250,"M":250,"L":300,"XL":360},"duration":"6 horas","img":"coating"},{"id":"signature","n":7,"name":"Signature Gtechniq Process","kicker":"Efecto showroom","level":6,"lead":"Eleva tu vehículo a un nivel superior mediante tecnología cerámica profesional.","bullets":["Brillo profundo tipo “espejo líquido”","Protección contra rayos UV, químicos y contaminación","Superficie ultra hidrofóbica (efecto repelente al agua)","Mayor facilidad de limpieza","Conservación del valor del vehículo","Acabado tipo exhibición (showroom finish)"],"price":{"S":350,"M":350,"L":455,"XL":545},"duration":null,"img":"signature"}],"extras":[{"id":"glass","name":"Desinfección de vidrios","detail":"Incluye Classic Wash","price":{"S":35,"M":35,"L":45,"XL":null},"img":"glass-ba"},{"id":"seats-fabric","name":"Limpieza de asientos de tela","fixed":40},{"id":"leather","name":"Limpieza e hidratación de cuero","fixed":50},{"id":"belts","name":"Limpieza y desinfección de cinturones","fixed":20},{"id":"odor","name":"Eliminación de olores (AirBomb Meguiar's)","fixed":25},{"id":"plastics","name":"Tratamiento de plásticos","options":[{"label":"Externo","price":15},{"label":"Interno","price":15},{"label":"Combo","price":25}]},{"id":"roof","name":"Limpieza de techo","fixed":30},{"id":"floor","name":"Limpieza de piso","options":[{"label":"Básico","price":40},{"label":"Con desmontaje","price":60}]},{"id":"wax","name":"Encerada con máquina","fixed":15}],"plans":[{"id":"plan-basic","name":"Mantenimiento Básico","includes":"4 lavados clásicos + 1 encerada gratis","baseService":"classic","baseCount":4,"price":{"S":30,"M":35,"L":42,"XL":55}},{"id":"plan-premium","name":"Mantenimiento Premium","includes":"2 lavados premium","baseService":"premium","baseCount":2,"price":{"S":60,"M":75,"L":85,"XL":100}}]},"home":{"services":[{"id":"rugs","name":"Limpieza de alfombras","time":"Entrega en 24 a 48 horas","bullets":["Limpieza profunda","Secado controlado","Eliminación de manchas (cuando es posible)","Desinfección","Aromatización (neutra o personalizada)"],"pricing":{"type":"options","unit":"alfombra","options":[{"label":"1,80 x 0,60 m","price":15},{"label":"1,80 / 2 x 1,20 m","price":20},{"label":"2,40 x 1,80 m","price":30},{"label":"2,40 x 3,00 m","price":35},{"label":"Oversize","price":40}]},"ba":["rug-before-480","rug-after-480"]},{"id":"furniture","name":"Limpieza de muebles","time":"Ejecución + secado: 2 a 5 horas","bullets":["Eliminación de ácaros con sistema de ozono","Luz UV","Inyección y succión profunda"],"pricing":{"type":"options","unit":"pieza","options":[{"label":"Silla de tela","price":6.5},{"label":"Silla mixta","price":7},{"label":"Sofá 1 puesto","price":15,"max":20},{"label":"Sofá 2 puestos","price":30,"max":35},{"label":"Sofá 3 puestos","price":40,"max":50},{"label":"Seccional (L / sala completa)","price":65,"max":90}]},"ba":["sofa-before-480","sofa-after-480"]},{"id":"mattress","name":"Limpieza de colchones","time":"Incluye limpieza de 2 almohadas","bullets":["Eliminación de ácaros con ozono","Luz UV","Inyección y extracción profunda"],"pricing":{"type":"options","unit":"colchón","options":[{"label":"Twin","price":20},{"label":"Full","price":25},{"label":"Queen","price":30},{"label":"King","price":35}]},"ba":["mattress-before-353","mattress-after-353"]},{"id":"windows","name":"Limpieza de ventanales","bullets":["Precio por unidad que baja según la cantidad"],"pricing":{"type":"tiers","unit":"ventanal","min":2,"default":4,"tiers":[{"from":2,"to":5,"price":8,"label":"2 a 5"},{"from":6,"to":10,"price":6.5,"label":"6 a 10"},{"from":11,"to":null,"price":5,"label":"Más de 10"}]}},{"id":"bathrooms","name":"Desinfección de sanitarios","bullets":["Vapor a alta temperatura","Eliminación de manchas amarillas","Limpieza de puntos ciegos","Desinfección completa del área"],"pricing":{"type":"tiers","unit":"baño","min":1,"default":2,"tiers":[{"from":1,"to":1,"price":25,"label":"1 baño"},{"from":2,"to":3,"price":20,"label":"2 a 3"},{"from":4,"to":null,"price":18,"label":"4 o más"}]}},{"id":"patios","name":"Limpieza de patios y callejones","time":"Tiempo: 1 a 3 horas","bullets":["Servicio integral según nivel de suciedad","Uso de químicos según necesidad","Hidrolavado","Desinfección"],"pricing":{"type":"per_m2","default":50,"plans":[{"label":"Basic","price":1.1},{"label":"Medium","price":1.6},{"label":"Intense (moho / maleza)","price":2.5}]}},{"id":"offices","name":"Limpieza de oficinas","bullets":["Limpieza general","Aspirado","Desinfección de sanitarios","Ozonificación","Limpieza de ventanales","Aromatización"],"idealFor":["Mantenimiento mensual","Entrega de oficinas","Post-construcción"],"pricing":{"type":"per_m2","default":80,"plans":[{"label":"Básico","price":2.5},{"label":"Profundo","price":3}],"monthly":"Plan mensual con tarifa especial"},"img":"office"},{"id":"kids","name":"Accesorios infantiles","bullets":["Limpieza y desinfección segura"],"pricing":{"type":"options","unit":"pieza","options":[{"label":"Tapetes / mats","price":15},{"label":"Car seat","price":10},{"label":"Stroller simple","price":10},{"label":"Stroller doble","price":15}]}}]}}</script>
 <script src="vendor/gsap.min.js" defer></script>
 <script src="vendor/ScrollTrigger.min.js" defer></script>
 <script src="vendor/SplitText.min.js" defer></script>

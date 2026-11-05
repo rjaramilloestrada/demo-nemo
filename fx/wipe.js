@@ -117,24 +117,47 @@ export function initWipe(stage, { beforeSrc, threshold = 0.55, onProgress, onCle
     return { x: e.clientX - r.left, y: e.clientY - r.top };
   }
 
-  let down = false;
+  // Con mouse se limpia al pasar el cursor. Con el dedo, el gesto se captura solo si
+  // los primeros 10 px son más horizontales que verticales; si no, la página hace scroll.
+  let down = false, pending = null;
   canvas.addEventListener('pointerdown', e => {
     if (clean) return;
-    down = true; last = null; markTouched();
-    canvas.setPointerCapture?.(e.pointerId);
-    const p = point(e); stroke(p.x, p.y);
+    last = null;
+    if (e.pointerType === 'mouse') {
+      down = true; markTouched();
+      canvas.setPointerCapture?.(e.pointerId);
+      const p = point(e); stroke(p.x, p.y);
+      return;
+    }
+    down = false;
+    pending = { id: e.pointerId, x: e.clientX, y: e.clientY };
   });
   canvas.addEventListener('pointermove', e => {
     const p = point(e);
     if (cursor) cursor.style.transform = `translate(${p.x}px,${p.y}px)`;
-    // con mouse se limpia con solo pasar el cursor; con dedo, arrastrando
     if (clean) return;
-    if (down || e.pointerType === 'mouse') { if (e.pointerType === 'mouse') markTouched(); stroke(p.x, p.y); }
+    if (e.pointerType === 'mouse') { markTouched(); stroke(p.x, p.y); return; }
+    if (pending && pending.id === e.pointerId) {
+      const dx = e.clientX - pending.x, dy = e.clientY - pending.y;
+      if (Math.hypot(dx, dy) < 10) return;
+      const r = canvas.getBoundingClientRect(), start = { x: pending.x - r.left, y: pending.y - r.top };
+      pending = null;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        down = true; markTouched();
+        try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+        stroke(start.x, start.y); stroke(p.x, p.y);
+      } else {
+        down = false;
+        try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+      return;
+    }
+    if (down) stroke(p.x, p.y);
   });
-  const up = () => { down = false; last = null; };
+  const up = () => { down = false; last = null; pending = null; };
   canvas.addEventListener('pointerup', up);
   canvas.addEventListener('pointercancel', up);
-  canvas.addEventListener('pointerleave', up);
+  canvas.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' || !down) up(); });
 
   function markTouched() {
     if (touched) return;

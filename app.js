@@ -6,6 +6,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const html = document.documentElement;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+const wide = matchMedia('(min-width: 1024px)');
 if (reduced) html.classList.add('reduced');
 const store = {
   get(k, d) { try { const v = localStorage.getItem('nemo:' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
@@ -35,10 +36,11 @@ const fmt = n => {
 };
 const sizeById = id => D.sizes.find(s => s.id === id);
 const sizeLabel = id => 'Vehículo ' + sizeById(id).label.replace(' (SUV)', '');
+const lc = t => t.charAt(0).toLowerCase() + t.slice(1);
 
 /* Odómetro: cada dígito es un carrete que rueda */
-function odo(el, value) {
-  const str = value == null ? 'Consultar' : fmt(value);
+function odo(el, value, f = fmt) {
+  const str = value == null ? 'Consultar' : f(value);
   if (el.dataset.v === str) return;
   const prev = el.dataset.v; el.dataset.v = str;
   el.setAttribute('aria-label', str);
@@ -62,7 +64,7 @@ function widths(el) {
   if (digitW.has(el)) return digitW.get(el);
   const m = h('span', { style: 'position:absolute;visibility:hidden;white-space:nowrap' });
   el.append(m);
-  const w = Array.from({ length: 10 }, (_, d) => { m.textContent = String(d).repeat(10); return m.getBoundingClientRect().width / 10; });
+  const w = Array.from({ length: 10 }, (_, d) => { m.textContent = String(d).repeat(10); return (m.offsetWidth || m.getBoundingClientRect().width) / 10; });
   m.remove();
   if (w[0] > 0) digitW.set(el, w);
   return w;
@@ -77,7 +79,9 @@ function setReels(el, str, zero) {
     if (w[d]) { r.parentNode.style.width = w[d] + 'px'; r.parentNode.style.transitionDelay = (i * 0.06) + 's'; }
   });
 }
-document.fonts?.ready.then(() => { for (const p of priceEls) { digitW.delete(p.el); if (p.el.dataset.v) setReels(p.el, p.el.dataset.v); } });
+function refreshReels() { for (const p of [...priceEls, { el: lenEl }]) { digitW.delete(p.el); if (p.el.dataset.v && p.el.dataset.kind === 'n') setReels(p.el, p.el.dataset.v); } }
+document.fonts?.ready.then(refreshReels);
+let reelT; new ResizeObserver(() => { clearTimeout(reelT); reelT = setTimeout(refreshReels, 160); }).observe(document.querySelector('.page'));
 
 /* ---------- WhatsApp ---------- */
 const waLink = text => `https://wa.me/${D.contact.whatsapp}?text=${encodeURIComponent(text)}`;
@@ -91,6 +95,7 @@ if (!sizeById(size)) size = 'M';
 const cart = store.get('cart', []);
 const priceEls = []; // {el, get: () => number|null}
 const sizeHooks = [];
+const lenEl = $('[data-len]');
 
 /* ---------- Toast y carrito ---------- */
 const toastEl = $('[data-toast]');
@@ -102,21 +107,26 @@ function toast(msg) {
 }
 function flyFrom(btn) {
   if (reduced || !btn) return;
-  const a = btn.getBoundingClientRect(), b = $('[data-cart-count]').getBoundingClientRect();
+  const z = parseFloat(getComputedStyle(html).zoom) || 1;
+  const sc = r => ({ left: r.left / z, top: r.top / z, width: r.width / z, height: r.height / z });
+  const a = sc(btn.getBoundingClientRect()), b = sc($('[data-cart-count]').getBoundingClientRect());
   const f = h('i', { class: 'flyer' });
   document.body.append(f);
-  const x0 = a.left + a.width / 2, y0 = a.top + a.height / 2, x1 = b.left + b.width / 2 || innerWidth / 2, y1 = b.top + b.height / 2 || innerHeight - 40;
+  const x0 = a.left + a.width / 2, y0 = a.top + a.height / 2;
+  const x1 = b.width ? b.left + b.width / 2 : innerWidth / z / 2, y1 = b.height && b.top < innerHeight / z ? b.top + b.height / 2 : innerHeight / z - 40;
   f.animate([
-    { transform: `translate(${x0}px,${y0}px) rotate(-45deg) scale(1)` },
-    { transform: `translate(${(x0 + x1) / 2}px,${Math.min(y0, y1) - 120}px) rotate(-45deg) scale(1.4)`, offset: .45 },
-    { transform: `translate(${x1}px,${y1}px) rotate(-45deg) scale(.4)`, opacity: .3 },
+    { transform: `translate(${x0}px,${y0}px) rotate(45deg) scale(1)` },
+    { transform: `translate(${(x0 + x1) / 2}px,${Math.min(y0, y1) - 120}px) rotate(45deg) scale(1.4)`, offset: .45 },
+    { transform: `translate(${x1}px,${y1}px) rotate(45deg) scale(.4)`, opacity: .3 },
   ], { duration: 750, easing: 'cubic-bezier(.5,0,.3,1)' }).onfinish = () => f.remove();
   f.style.left = '0px'; f.style.top = '0px';
 }
 function addLine(line, btn) {
+  const wasEmpty = !cart.length;
   const ex = cart.find(l => l.key === line.key);
   if (ex) ex.qty += line.qty || 1; else cart.push({ qty: 1, ...line });
   saveCart(); flyFrom(btn);
+  if (wasEmpty && wide.matches) toggleSheet(true);
   setTimeout(() => { const c = $('[data-cart-count]'); c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump'); }, reduced ? 0 : 700);
   toast('Agregado: ' + line.title);
 }
@@ -138,7 +148,10 @@ function renderCart() {
   box.classList.toggle('is-on', cart.length > 0);
   document.body.classList.toggle('has-cart', cart.length > 0);
   $('[data-cart-count]').textContent = n;
-  $('[data-cart-total]').textContent = t.ranged ? `${fmt(t.min)} a ${fmt(t.max)}` : fmt(t.min);
+  $('[data-cart-unit]').textContent = n === 1 ? 'ítem' : 'ítems';
+  const totalTxt = t.ranged ? `${fmt(t.min)} a ${fmt(t.max)}` : fmt(t.min);
+  $('[data-cart-total]').textContent = totalTxt;
+  $('[data-cart-total2]').textContent = totalTxt + (t.pending ? ' +' : '');
   $('[data-cart-lines]').replaceChildren(...cart.map(l => h('li', {},
     h('span', {}, (l.qty > 1 ? l.qty + ' × ' : '') + l.title, l.detail ? h('small', {}, l.detail) : null),
     h('b', {}, l.price == null ? 'Por confirmar' : lineMax(l) != null ? `${fmt(lineTotal(l))} a ${fmt(lineMax(l))}` : fmt(lineTotal(l))),
@@ -148,8 +161,10 @@ function renderCart() {
   if (t.ranged) msgs.push('Algunos precios son un rango que Nemo confirma según la pieza.');
   if (t.pending) msgs.push(`${t.pending} ítem${t.pending > 1 ? 's' : ''} se cotiza${t.pending > 1 ? 'n' : ''} por WhatsApp.`);
   note.hidden = !msgs.length; note.textContent = msgs.join(' ');
-  $('[data-cart-send]').href = waLink(cartMessage());
-  if (!cart.length) toggleSheet(false);
+  const link = waLink(cartMessage());
+  $('[data-cart-send]').href = link;
+  $('[data-cart-quick]').href = link;
+  if (!cart.length) toggleSheet(false); else syncDock();
 }
 function cartMessage() {
   const t = totals();
@@ -160,13 +175,24 @@ function cartMessage() {
   const total = t.ranged ? `${fmt(t.min)} a ${fmt(t.max)}` : fmt(t.min);
   return `Hola Nemo, quiero cotizar:\n${lines.join('\n')}\n\nTotal estimado: ${total}${t.pending ? ' + ítems por confirmar' : ''}\n\n(Enviado desde la página web)`;
 }
+function syncDock() {
+  const open = $('[data-cart-toggle]').getAttribute('aria-expanded') === 'true';
+  const docked = open && cart.length > 0 && wide.matches;
+  $('[data-cart]').classList.toggle('is-docked', docked);
+  document.body.classList.toggle('cart-docked', docked);
+  document.body.classList.toggle('cart-open', open && !wide.matches);
+}
 function toggleSheet(open) {
   const btn = $('[data-cart-toggle]'), sheet = $('[data-cart-sheet]');
   open = open ?? btn.getAttribute('aria-expanded') !== 'true';
   btn.setAttribute('aria-expanded', open); sheet.hidden = !open;
+  syncDock();
+  window.ScrollTrigger && setTimeout(() => window.ScrollTrigger.refresh(), 520);
 }
 $('[data-cart-toggle]').addEventListener('click', () => toggleSheet());
+$('[data-cart-scrim]').addEventListener('click', () => toggleSheet(false));
 $('[data-cart-clear]').addEventListener('click', () => { cart.splice(0); saveCart(); });
+wide.addEventListener?.('change', syncDock);
 const addButtons = []; // {btn, key: () => string}
 function syncAddButtons() {
   for (const { btn, key, label } of addButtons) {
@@ -195,45 +221,30 @@ if (!reduced) {
   $('.hero__skip').addEventListener('click', () => wipe.finish());
 } else hero.classList.add('is-clean');
 
-/* ---------- Marquee ---------- */
-const words = ['Classic Wash', 'Premium Wash', 'Detailing Pro', 'Cerámico 9H', 'Gtechniq', 'Alfombras', 'Colchones', 'Muebles', 'Oficinas', 'Ventanales'];
-const track = $('[data-marquee]');
-for (let k = 0; k < 2; k++) words.forEach(w => track.append(h('span', {}, w)));
-
 /* ---------- Selector de tamaño ---------- */
-const CARS = {
-  S: { body: 'M14,58 L12,46 Q14,38 34,37 L58,35 Q70,22 90,21 L122,21 Q138,22 150,35 L176,39 Q190,42 190,52 L190,58 Z', glass: 'M62,35 L92,24 L120,24 L144,35 Z', w: [46, 154, 11], s: .86 },
-  M: { body: 'M10,58 L9,40 Q10,30 28,28 L46,27 Q56,13 76,12 L132,12 Q148,13 158,28 L178,32 Q192,35 192,48 L192,58 Z', glass: 'M50,27 L78,15 L130,15 L152,28 Z', w: [44, 158, 12], s: .93 },
-  L: { body: 'M6,58 L6,24 Q6,10 22,9 L40,8 Q46,7 56,6 L146,6 Q156,7 164,22 L182,26 Q194,29 194,42 L194,58 Z', glass: 'M44,22 L58,10 L144,10 L158,22 Z', w: [42, 160, 13], s: 1 },
-  XL: { body: 'M4,58 L4,30 Q4,28 8,28 L100,28 Q104,7 112,6 L150,6 Q158,7 166,24 L184,27 Q196,30 196,42 L196,58 Z', glass: 'M104,27 L114,10 L148,10 L160,24 Z', w: [40, 164, 13.5], s: 1.04 },
-};
-const carSvg = $('.sizes__car');
+const stage = $('.sizes__stage');
+const carEls = $$('.car', stage);
+const fmtLen = m => m.toFixed(1).replace('.', ',') + '\u00a0m';
 function drawCar(id, animate) {
-  const c = CARS[id];
-  const set = { body: c.body, glass: c.glass };
-  const g = window.gsap;
-  if (animate && g && !reduced) {
-    g.to('.sizes__body', { attr: { d: set.body }, duration: .8, ease: 'expo.out' });
-    g.to('.sizes__glass', { attr: { d: set.glass }, duration: .8, ease: 'expo.out' });
-    g.to('.sizes__w1,.sizes__h1', { attr: { cx: c.w[0] }, duration: .8, ease: 'expo.out' });
-    g.to('.sizes__w2,.sizes__h2', { attr: { cx: c.w[1] }, duration: .8, ease: 'expo.out' });
-    g.to('.sizes__w1,.sizes__w2', { attr: { r: c.w[2] }, duration: .8, ease: 'expo.out' });
-    g.fromTo(carSvg, { y: -10 }, { y: 0, scale: c.s, duration: .9, ease: 'bounce.out', transformOrigin: '50% 100%' });
-  } else {
-    $('.sizes__body').setAttribute('d', set.body); $('.sizes__glass').setAttribute('d', set.glass);
-    $$('.sizes__w1,.sizes__h1').forEach(e => e.setAttribute('cx', c.w[0]));
-    $$('.sizes__w2,.sizes__h2').forEach(e => e.setAttribute('cx', c.w[1]));
-    $$('.sizes__w1,.sizes__w2').forEach(e => e.setAttribute('r', c.w[2]));
-    carSvg.style.transform = `scale(${c.s})`; carSvg.style.transformOrigin = '50% 100%';
-  }
-  $('.sizes__examples').textContent = sizeById(id).examples;
+  const s = sizeById(id);
+  if (!animate) stage.classList.add('no-anim');
+  stage.style.setProperty('--len', (s.length_m * 100 / 640).toFixed(4));
+  carEls.forEach(el => {
+    if (el.dataset.car === id) { el.classList.remove('is-out'); el.classList.add('is-in'); el.style.setProperty('--spin', '0deg'); }
+    else if (el.classList.contains('is-in')) { el.classList.remove('is-in'); el.classList.add('is-out'); el.style.setProperty('--spin', '90deg'); }
+    else { el.classList.remove('is-out'); el.style.setProperty('--spin', '-90deg'); }
+  });
+  odo(lenEl, s.length_m, fmtLen);
+  $('[data-size-examples]').textContent = s.examples;
+  if (!animate) requestAnimationFrame(() => requestAnimationFrame(() => stage.classList.remove('no-anim')));
 }
 const picker = $('[data-size-picker]');
 const chips = $('[data-size-chips]');
 D.sizes.forEach(s => {
-  picker.append(h('button', { type: 'button', role: 'radio', class: 'size-opt magnetic-soft', 'data-size': s.id, 'aria-checked': 'false', onclick: () => setSize(s.id, true) },
-    h('b', {}, s.label), h('small', {}, s.examples), h('i', {}, icon('i-check'))));
-  chips.append(h('button', { type: 'button', 'data-size': s.id, 'aria-pressed': 'false', onclick: () => setSize(s.id, true) }, s.id === 'XL' ? 'XL' : s.label.split(' ')[0]));
+  picker.append(h('button', { type: 'button', role: 'radio', class: 'size-opt', 'data-size': s.id, 'aria-checked': 'false', onclick: () => setSize(s.id, true) },
+    h('b', {}, s.label), h('small', {}, s.examples)));
+  chips.append(h('button', { type: 'button', 'data-size': s.id, 'aria-pressed': 'false', onclick: () => { setSize(s.id, true); sizeMenu(false); } },
+    h('b', {}, s.label), h('small', {}, s.examples)));
 });
 picker.addEventListener('keydown', e => {
   const i = D.sizes.findIndex(s => s.id === size);
@@ -251,12 +262,24 @@ function setSize(id, user) {
   syncAddButtons();
   if (user) toast('Precios para ' + sizeLabel(id).toLowerCase());
 }
+sizeHooks.push(() => {
+  $$('[data-size-label]').forEach(e => e.textContent = sizeLabel(size));
+  $$('[data-size-name]').forEach(e => e.textContent = sizeLabel(size).toLowerCase());
+  $('[data-size-current]').textContent = sizeById(size).label;
+});
 
-/* ---------- Escalera de servicios ---------- */
-function bulletList(items, visible = 4) {
-  return h('ul', { class: 'svc__list' }, items.map((t, i) => h('li', { class: i >= visible ? 'is-more' : null }, t)));
+/* ---------- Tamaño en la navegación ---------- */
+const sizeBtn = $('[data-size-toggle]');
+function sizeMenu(open) {
+  open = open ?? sizeBtn.getAttribute('aria-expanded') !== 'true';
+  sizeBtn.setAttribute('aria-expanded', open); chips.hidden = !open;
 }
-function picture(name, alt, sizes = '(min-width: 900px) 400px, 86vw') {
+sizeBtn.addEventListener('click', () => sizeMenu());
+document.addEventListener('click', e => { if (!chips.hidden && !e.target.closest('[data-navsize]')) sizeMenu(false); });
+
+/* ---------- Servicios: lista de precios editorial ---------- */
+function bulletList(items) { return h('ul', { class: 'svc__list' }, items.map(t => h('li', {}, t))); }
+function picture(name, alt, sizes = '(min-width: 900px) 420px, 90vw') {
   const has960 = !['headlight'].includes(name);
   return h('img', { src: `assets/${name}-480.webp`, srcset: has960 ? `assets/${name}-480.webp 480w, assets/${name}-960.webp 960w` : null, sizes, alt, loading: 'lazy', decoding: 'async' });
 }
@@ -271,7 +294,13 @@ function beforeAfter([b, a], caption, ar) {
   el.append(input);
   return el;
 }
-const ladderTrack = $('[data-ladder-track]');
+const summary = s => {
+  const b = s.bullets;
+  if (s.bulletsTitle) return `${s.bulletsTitle}: ${lc(b[0])} y ${b.length - 1} más.`;
+  if (b.length <= 3) return b.slice(0, -1).map((t, i) => i ? lc(t) : t).join(', ') + ' y ' + lc(b[b.length - 1]) + '.';
+  return `${b[0]}, ${lc(b[1])} y ${b.length - 2} más.`;
+};
+const svcBox = $('[data-services]');
 D.car.ladder.forEach(s => {
   const priceEl = h('span', { class: 'price' });
   priceEls.push({ el: priceEl, get: () => s.price[size] });
@@ -281,33 +310,48 @@ D.car.ladder.forEach(s => {
     addLine({ key: key(), title: s.name, detail: sizeLabel(size), price: s.price[size] }, e.currentTarget);
   } });
   addButtons.push({ btn: add, key });
-  const more = s.bullets.length > 4;
-  const card = h('article', { class: 'svc', 'data-lvl': s.level, style: `--lvl:${s.level}` },
-    h('div', { class: 'svc__top' }, h('span', { class: 'svc__n' }, String(s.n).padStart(2, '0')),
-      h('span', { class: 'svc__lvl', 'aria-label': `Nivel ${s.level} de 6` }, Array.from({ length: 6 }, (_, i) => h('i', { class: i < s.level ? 'on' : null })))),
-    h('div', {}, s.family ? h('p', { class: 'svc__fam' }, s.family) : s.kicker ? h('p', { class: 'svc__fam' }, s.kicker) : null, h('h3', { class: 'svc__name' }, s.name)),
-    s.lead ? h('p', { class: 'svc__lead' }, s.lead) : null,
-    s.ba ? beforeAfter(s.ba, null, '4/3') : s.img ? h('div', { class: 'svc__img' }, picture(s.img, s.name)) : null,
-    s.bulletsTitle ? h('p', { class: 'svc__bt' }, s.bulletsTitle) : null,
-    bulletList(s.bullets),
-    more ? h('button', { type: 'button', class: 'svc__more', onclick: e => { const c = e.currentTarget.closest('.svc'); c.classList.toggle('is-open'); e.currentTarget.textContent = c.classList.contains('is-open') ? 'Ver menos' : `Ver los ${s.bullets.length} puntos`; window.ScrollTrigger?.refresh(); } }, `Ver los ${s.bullets.length} puntos`) : null,
-    s.note ? h('p', { class: 'svc__lead' }, s.note) : null,
-    s.addon ? (() => {
-      const k = () => `car:${s.id}-addon:${size}`;
-      const b = h('button', { type: 'button', class: 'add', style: 'height:36px;padding:0 12px;font-size:12.5px', onclick: e => cart.some(l => l.key === k()) ? removeKey(k()) : addLine({ key: k(), title: s.addon.name + ' (adicional a ' + s.name + ')', price: s.addon.price }, e.currentTarget) });
-      addButtons.push({ btn: b, key: k });
-      return h('div', { class: 'svc__addon' }, h('span', {}, 'Adicional: ', h('b', {}, s.addon.name + ' ' + fmt(s.addon.price))), b);
-    })() : null,
-    h('div', { class: 'svc__foot' },
-      h('div', { class: 'svc__price' }, h('small', { 'data-size-label': '' }), priceEl,
-        s.duration ? h('span', { class: 'svc__dur' }, icon('i-clock'), 'Aprox. ' + s.duration) : null),
-      add));
-  ladderTrack.append(card);
+  const did = `svc-${s.id}-d`, nid = `svc-${s.id}-n`;
+  const toggle = h('button', { type: 'button', class: 'svc__toggle', 'aria-expanded': 'false', 'aria-controls': did }, h('span', {}, 'Ver detalle'), icon('i-chev'));
+  let addon = null;
+  if (s.addon) {
+    const k = () => `car:${s.id}-addon:${size}`;
+    const b = h('button', { type: 'button', class: 'add', onclick: e => cart.some(l => l.key === k()) ? removeKey(k()) : addLine({ key: k(), title: s.addon.name + ' (adicional a ' + s.name + ')', price: s.addon.price }, e.currentTarget) });
+    addButtons.push({ btn: b, key: k });
+    addon = h('div', { class: 'svc__addon' }, h('span', {}, 'Adicional: ', h('b', {}, s.addon.name + ' ' + fmt(s.addon.price))), b);
+  }
+  const media = s.ba ? beforeAfter(s.ba, null, '4/5') : s.img ? picture(s.img, s.name) : null;
+  const detail = h('div', { class: 'svc__detail', id: did, role: 'region', 'aria-labelledby': nid },
+    h('div', { class: 'svc__detail-in' }, h('div', { class: 'svc__body' },
+      h('div', { class: 'svc__text' },
+        s.lead ? h('p', { class: 'svc__lead' }, s.lead) : null,
+        s.bulletsTitle ? h('p', { class: 'svc__bt' }, s.bulletsTitle) : null,
+        bulletList(s.bullets),
+        s.note ? h('p', { class: 'svc__lead' }, s.note) : null,
+        addon),
+      media ? h('div', { class: 'svc__media' }, media) : null)));
+  const row = h('div', { class: 'svc__row' },
+    h('span', { class: 'svc__n', 'aria-hidden': 'true' }, String(s.n).padStart(2, '0')),
+    h('div', { class: 'svc__title' }, s.family || s.kicker ? h('p', { class: 'svc__fam' }, s.family || s.kicker) : null, h('h3', { class: 'svc__name', id: nid }, s.name)),
+    h('div', { class: 'svc__sum' }, h('p', {}, summary(s)), toggle),
+    h('span', { class: 'svc__dur' }, s.duration ? 'Aprox. ' + s.duration : ''),
+    h('div', { class: 'svc__price' }, h('small', { 'data-size-label': '' }), priceEl),
+    h('div', { class: 'svc__foot' }, add));
+  const art = h('article', { class: 'svc', role: 'listitem', style: `--lvl:${s.level}`, 'data-reveal': '' }, row, detail);
+  const flip = () => {
+    const open = art.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open);
+    toggle.firstChild.textContent = open ? 'Ver menos' : 'Ver detalle';
+    setTimeout(() => window.ScrollTrigger?.refresh(), 520);
+  };
+  toggle.addEventListener('click', flip);
+  row.addEventListener('click', e => { if (!e.target.closest('button,a,input')) flip(); });
+  svcBox.append(art);
 });
-sizeHooks.push(() => $$('[data-size-label]').forEach(e => e.textContent = sizeLabel(size)));
 
 /* ---------- Adicionales ---------- */
 const extrasBox = $('[data-extras]');
+const figX = D.car.extras.find(x => x.img);
+if (figX) $('[data-extras-fig]').append(picture(figX.img, figX.name + ': antes y después', '(min-width: 900px) 760px, 92vw'), h('figcaption', {}, h('b', {}, figX.name + '.'), ' Antes y después.'));
 D.car.extras.forEach(x => {
   let opt = x.options ? 0 : null;
   const priceNow = () => x.price ? x.price[size] : x.options ? x.options[opt].price : x.fixed;
@@ -324,12 +368,13 @@ D.car.extras.forEach(x => {
     opt = i; $$('.chip', e.currentTarget.parentNode).forEach((c, j) => c.setAttribute('aria-pressed', j === i)); odo(priceEl, priceNow()); syncAddButtons();
   } }, o.label))) : null;
   extrasBox.append(h('div', { class: 'extra', 'data-reveal': '' },
-    x.img ? h('div', { class: 'extra__img' }, picture(x.img, x.name + ': antes y después', '(min-width: 700px) 380px, 90vw')) : null,
-    h('div', { class: 'extra__row' }, h('p', { class: 'extra__name' }, x.name, x.detail ? h('small', {}, x.detail) : null), priceEl),
+    h('div', { class: 'extra__main' }, h('p', { class: 'extra__name' }, x.name), x.detail ? h('p', { class: 'extra__detail' }, x.detail) : null),
+    h('div', { class: 'extra__side' }, priceEl),
     chipsEl,
-    h('div', { class: 'extra__row' }, h('small', { class: 'muted', 'data-extra-size': x.price ? '' : null }, x.price ? '' : 'Precio único'), add)));
+    h('small', { class: 'extra__meta', 'data-extra-size': x.price ? '' : null }, x.price ? '' : 'Precio único'),
+    h('div', { class: 'extra__cta' }, add)));
 });
-sizeHooks.push(() => $$('[data-extra-size]').forEach(e => e.textContent = sizeLabel(size) + (size === 'XL' ? ': consultar' : '')));
+sizeHooks.push(() => $$('[data-extra-size]').forEach(e => e.textContent = sizeLabel(size) + (size === 'XL' && D.car.extras.some(x => x.price && x.price.XL == null) ? ': consultar' : '')));
 
 /* ---------- Planes ---------- */
 const plansBox = $('[data-plans]');
@@ -337,33 +382,31 @@ D.car.plans.forEach((p, idx) => {
   const base = D.car.ladder.find(s => s.id === p.baseService);
   const priceEl = h('span', { class: 'price' });
   priceEls.push({ el: priceEl, get: () => p.price[size] });
-  const vs = h('p', { class: 'plan__vs' }), save = h('span', { class: 'plan__save' });
+  const vs = h('p', { class: 'plan__vs' }), save = h('p', { class: 'plan__save' });
   const upd = () => {
     const loose = base.price[size] * p.baseCount, diff = loose - p.price[size];
     vs.replaceChildren(`${p.baseCount} ${base.name} sueltos: `, h('s', {}, fmt(loose)));
-    save.textContent = diff > 0 ? `Ahorras ${fmt(diff)} al mes` : '';
+    save.textContent = diff > 0 ? `Ahorras ${fmt(diff)} al mes.` : '';
     save.hidden = !(diff > 0);
   };
   sizeHooks.push(upd);
   const key = () => `plan:${p.id}:${size}`;
   const add = h('button', { type: 'button', class: 'add', onclick: e => cart.some(l => l.key === key()) ? removeKey(key()) : addLine({ key: key(), title: p.name + ' (mensual)', detail: sizeLabel(size) + ', ' + p.includes, price: p.price[size] }, e.currentTarget) });
   addButtons.push({ btn: add, key, label: 'Lo quiero' });
-  const hot = idx === 1;
-  plansBox.append(h('article', { class: 'plan' + (hot ? ' plan--hot' : ''), 'data-reveal': '' },
-    hot ? h('div', { class: 'plan__bubbles', 'aria-hidden': 'true' }, Array.from({ length: 14 }, (_, i) => h('i', { style: `left:${(i * 7.3) % 100}%;width:${8 + (i * 13) % 26}px;height:${8 + (i * 13) % 26}px;animation-duration:${6 + (i % 5) * 1.7}s;animation-delay:-${i * .8}s` }))) : null,
-    h('div', { class: 'plan__top' }, h('p', { class: 'plan__name' }, p.name), save),
-    h('p', { class: 'plan__inc' }, p.includes.replace(/gratis$/i, 'gratis')),
-    h('div', { class: 'plan__price' }, priceEl, h('span', { class: 'muted' }, '/ mes')),
-    vs,
-    h('div', {}, add)));
+  plansBox.append(h('article', { class: 'plan' + (idx === 1 ? ' plan--hot' : ''), 'data-reveal': '' },
+    h('p', { class: 'plan__label' }, idx === 1 ? 'El más completo' : 'Para empezar'),
+    h('h3', { class: 'plan__name' }, p.name),
+    h('p', { class: 'plan__inc' }, p.includes),
+    h('div', { class: 'plan__price' }, priceEl, h('span', { class: 'per' }, 'al mes')),
+    vs, save,
+    h('div', { class: 'plan__cta' }, h('small', { class: 'plan__vs', 'data-size-label': '' }), add)));
 });
 
 /* ---------- Hogar y oficina ---------- */
 const rail = $('[data-ba-rail]');
 const homeBox = $('[data-home]');
 const baCaptions = { rugs: 'Alfombra', furniture: 'Sofá', mattress: 'Colchón' };
-const baRatio = { rugs: '706/333', furniture: '2/1', mattress: '353/520' };
-D.home.services.filter(s => s.ba).forEach(s => rail.append(beforeAfter(s.ba, baCaptions[s.id], baRatio[s.id])));
+D.home.services.filter(s => s.ba).forEach(s => rail.append(beforeAfter(s.ba, baCaptions[s.id], '2/1')));
 
 const plural = u => u.endsWith('l') ? u + 'es' : u + 's';
 function stepper(value, min, onChange, label) {
@@ -378,13 +421,13 @@ function stepper(value, min, onChange, label) {
 D.home.services.forEach(s => {
   const P = s.pricing;
   const st = { opt: 0, qty: P.type === 'tiers' ? P.default : 1, plan: 0, m2: P.default || 50 };
-  const priceEl = h('span', { class: 'price' }), maxEl = h('span', { class: 'muted', style: 'font-weight:600' }), math = h('p', { class: 'calc__math' });
+  const priceEl = h('span', { class: 'price' }), maxEl = h('span', { class: 'calc__max' }), math = h('p', { class: 'calc__math' });
   const ctrl = h('div', { class: 'calc__ctrl' });
-  let calc; // () => {price, max, title, detail, key, qty}
+  let calc;
   if (P.type === 'options') {
-    const chipsEl = h('div', { class: 'chips', role: 'group', 'aria-label': 'Elige ' + P.unit }, P.options.map((o, i) => h('button', { type: 'button', class: 'chip', 'aria-pressed': i === 0, onclick: e => { st.opt = i; $$('.chip', chipsEl).forEach((c, j) => c.setAttribute('aria-pressed', j === i)); upd(); } }, o.label)));
+    const chipsEl = h('div', { class: 'chips', role: 'group', 'aria-label': 'Elige ' + P.unit }, P.options.map((o, i) => h('button', { type: 'button', class: 'chip', 'aria-pressed': i === 0, onclick: () => { st.opt = i; $$('.chip', chipsEl).forEach((c, j) => c.setAttribute('aria-pressed', j === i)); upd(); } }, o.label)));
     ctrl.append(h('span', { class: 'calc__lbl' }, 'Elige'), chipsEl, h('span', { class: 'calc__lbl' }, 'Cantidad'), stepper(1, 1, v => { st.qty = v; upd(); }, 'Cantidad'));
-    calc = () => { const o = P.options[st.opt]; return { unit: o.price, price: o.price * st.qty, max: o.max ? o.max * st.qty : null, mathTxt: `${st.qty} × ${o.max ? fmt(o.price) + ' a ' + fmt(o.max) : fmt(o.price)}`, line: { key: `home:${s.id}:${st.opt}`, title: `${s.name}: ${o.label}`, price: o.price, max: o.max ?? null, qty: st.qty } }; };
+    calc = () => { const o = P.options[st.opt]; return { price: o.price * st.qty, max: o.max ? o.max * st.qty : null, mathTxt: `${st.qty} × ${o.max ? fmt(o.price) + ' a ' + fmt(o.max) : fmt(o.price)}`, line: { key: `home:${s.id}:${st.opt}`, title: `${s.name}: ${o.label}`, price: o.price, max: o.max ?? null, qty: st.qty } }; };
   } else if (P.type === 'tiers') {
     const tiersEl = h('div', { class: 'tiers' }, P.tiers.map(t => h('div', { class: 'tier' }, h('b', {}, fmt(t.price)), h('small', {}, t.label + ' · c/u'))));
     ctrl.append(h('span', { class: 'calc__lbl' }, 'Cantidad de ' + plural(P.unit)), stepper(P.default, P.min, v => { st.qty = v; upd(); }, 'Cantidad'), tiersEl);
@@ -400,30 +443,88 @@ D.home.services.forEach(s => {
     const range = h('input', { type: 'range', class: 'range', min: 10, max: 600, step: 5, value: st.m2, 'aria-label': 'Metros cuadrados' });
     range.addEventListener('input', () => { st.m2 = +range.value; num.value = st.m2; upd(); });
     num.addEventListener('input', () => { st.m2 = Math.max(1, Math.min(10000, +num.value || 1)); range.value = st.m2; upd(); });
-    ctrl.append(h('span', { class: 'calc__lbl' }, 'Tipo'), chipsEl, h('div', { style: 'display:flex;align-items:center;justify-content:space-between;gap:10px' }, h('span', { class: 'calc__lbl' }, 'Área'), h('div', { class: 'stepper', style: 'padding:0 14px' }, num, h('span', { class: 'muted' }, 'm²'))), range);
+    ctrl.append(h('span', { class: 'calc__lbl' }, 'Tipo'), chipsEl, h('div', { class: 'calc__area' }, h('span', { class: 'calc__lbl' }, 'Área'), h('div', { class: 'stepper stepper--area' }, num, h('span', { class: 'calc__lbl' }, 'm²'))), range);
     calc = () => { const o = P.plans[st.plan]; const tot = Math.round(o.price * st.m2 * 100) / 100; return { price: tot, mathTxt: `${st.m2} m² × ${fmt(o.price)}`, line: { key: `home:${s.id}:${st.plan}:${st.m2}`, title: `${s.name}: ${o.label}`, detail: `${st.m2} m² a ${fmt(o.price)}/m²`, price: tot, qty: 1 } }; };
   }
   const add = h('button', { type: 'button', class: 'add', onclick: e => addLine(calc().line, e.currentTarget) }, icon('i-plus'), h('span', {}, 'Agregar'));
   priceEls.push({ el: priceEl, get: () => calc().price, home: true });
   function upd() { const r = calc(); odo(priceEl, r.price); maxEl.textContent = r.max ? ' a ' + fmt(r.max) : ''; math.textContent = r.mathTxt; }
-  const card = h('article', { class: 'calc', 'data-reveal': '' },
+  homeBox.append(h('article', { class: 'calc', 'data-reveal': '' },
     h('div', { class: 'calc__head' }, h('div', {}, h('h3', { class: 'calc__name' }, s.name), s.time ? h('p', { class: 'calc__time' }, icon('i-clock'), s.time) : null)),
-    s.img ? h('div', { class: 'calc__img' }, picture(s.img, s.name, '(min-width:800px) 600px, 90vw')) : null,
-    bulletList(s.bullets, 6),
-    s.idealFor ? h('p', { class: 'muted', style: 'font-size:13px' }, 'Ideal para: ' + s.idealFor.join(', ').toLowerCase() + '.') : null,
+    s.img ? h('div', { class: 'calc__img' }, picture(s.img, s.name, '(min-width: 900px) 600px, 90vw')) : null,
+    bulletList(s.bullets),
+    s.idealFor ? h('p', { class: 'calc__ideal' }, 'Ideal para: ' + s.idealFor.join(', ').toLowerCase() + '.') : null,
     ctrl,
-    h('div', { class: 'calc__foot' }, h('div', {}, h('small', { class: 'muted', style: 'font-size:11.5px' }, 'Total estimado'), h('div', {}, priceEl, maxEl), math), add),
-    P.monthly ? h('div', { class: 'calc__quote' }, h('span', {}, P.monthly), h('button', { type: 'button', onclick: e => addLine({ key: `home:${s.id}:monthly`, title: `${s.name}: plan mensual`, detail: 'tarifa especial', price: null }, e.currentTarget) }, 'Solicitar tarifa')) : null);
-  homeBox.append(card);
+    h('div', { class: 'calc__foot' }, h('div', {}, h('small', {}, 'Total estimado'), h('div', {}, priceEl, maxEl), math), add),
+    P.monthly ? h('div', { class: 'calc__quote' }, h('span', {}, P.monthly), h('button', { type: 'button', onclick: e => addLine({ key: `home:${s.id}:monthly`, title: `${s.name}: plan mensual`, detail: 'tarifa especial', price: null }, e.currentTarget) }, 'Solicitar tarifa')) : null));
   upd();
 });
 
-/* ---------- Cobertura ---------- */
-$('[data-coverage]').append(...D.contact.coverage.map(z => h('li', {}, z)));
-const grid = $('.map__grid');
-const svgLine = (x1, y1, x2, y2) => { const l = document.createElementNS('http://www.w3.org/2000/svg', 'line'); Object.entries({ x1, y1, x2, y2 }).forEach(([k, v]) => l.setAttribute(k, v)); grid.append(l); };
-for (let x = 0; x <= 400; x += 40) svgLine(x, 0, x, 320);
-for (let y = 0; y <= 320; y += 40) svgLine(0, y, 400, y);
+/* ---------- Cobertura y mapa ---------- */
+const geo = D.contact.geo;
+const zones = geo?.areas?.features || D.contact.coverage.map(n => ({ properties: { name: n } }));
+$('[data-coverage]').append(...zones.map((f, i) => h('li', {}, h('span', { class: 'cov__n' }, String(i + 1).padStart(2, '0')), h('div', {}, h('b', {}, f.properties.name), f.properties.detail ? h('small', {}, f.properties.detail) : null))));
+
+const mapCanvas = $('[data-map-canvas]');
+const ML = 'https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl';
+let mapState = 'idle', mapObj = null;
+function mapFallback() {
+  if (mapState === 'live' || mapState === 'fallback') return;
+  mapState = 'fallback';
+  try { mapObj?.remove(); } catch (e) {}
+  mapCanvas.replaceChildren(h('img', { class: 'map__fallback', src: 'assets/map-fallback.webp', alt: 'Mapa de Guayaquil y Samborondón con las zonas de cobertura de Nemo: Vía Samborondón y Ceibos / Vía la Costa', loading: 'lazy' }));
+  mapCanvas.classList.add('is-fallback');
+  const cap = $('.map__cap'); if (cap) cap.textContent = 'Zonas aproximadas de cobertura.';
+}
+function pinEl(name) { return h('div', { class: 'pin' }, h('span', { class: 'pin__label' }, name), h('span', { class: 'pin__dot' })); }
+function bounds() {
+  let a = [180, 90, -180, -90];
+  for (const f of geo.areas.features) for (const [x, y] of f.geometry.coordinates[0]) a = [Math.min(a[0], x), Math.min(a[1], y), Math.max(a[2], x), Math.max(a[3], y)];
+  return [[a[0], a[1]], [a[2], a[3]]];
+}
+function startMap() {
+  if (mapState !== 'idle' || !geo) return;
+  mapState = 'loading';
+  const timer = setTimeout(mapFallback, 6000);
+  document.head.append(h('link', { rel: 'stylesheet', href: ML + '.css' }));
+  const js = h('script', { src: ML + '.js', async: true });
+  js.onerror = () => { clearTimeout(timer); mapFallback(); };
+  js.onload = () => {
+    if (mapState !== 'loading') return;
+    try {
+      const gl = window.maplibregl;
+      const m = mapObj = new gl.Map({
+        container: mapCanvas, style: 'https://tiles.openfreemap.org/styles/dark',
+        center: geo.center, zoom: geo.zoom, cooperativeGestures: true, dragRotate: false, pitchWithRotate: false, touchPitch: false,
+        attributionControl: { compact: false },
+        locale: {
+          'CooperativeGesturesHandler.WindowsHelpText': 'Usa Ctrl + rueda para hacer zoom en el mapa',
+          'CooperativeGesturesHandler.MacHelpText': 'Usa ⌘ + rueda para hacer zoom en el mapa',
+          'CooperativeGesturesHandler.MobileHelpText': 'Usa dos dedos para mover el mapa',
+          'NavigationControl.ZoomIn': 'Acercar', 'NavigationControl.ZoomOut': 'Alejar',
+        },
+      });
+      m.on('error', () => {});
+      m.addControl(new gl.NavigationControl({ showCompass: false }), 'top-right');
+      m.on('load', () => {
+        if (mapState !== 'loading') return;
+        clearTimeout(timer); mapState = 'live';
+        m.addSource('zonas', { type: 'geojson', data: geo.areas });
+        m.addLayer({ id: 'zonas-fill', type: 'fill', source: 'zonas', paint: { 'fill-color': D.brand.colors.orange, 'fill-opacity': 0.2 } });
+        m.addLayer({ id: 'zonas-line', type: 'line', source: 'zonas', paint: { 'line-color': D.brand.colors.orange, 'line-width': 2 } });
+        geo.areas.features.forEach(f => new gl.Marker({ element: pinEl(f.properties.name), anchor: 'bottom' }).setLngLat(f.properties.pin).addTo(m));
+        const pad = Math.min(56, mapCanvas.clientWidth * 0.12);
+        m.fitBounds(bounds(), { padding: { top: pad + 34, bottom: pad, left: pad, right: pad }, duration: 0 });
+        mapCanvas.classList.add('is-live');
+      });
+    } catch (e) { clearTimeout(timer); mapFallback(); }
+  };
+  document.head.append(js);
+}
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); startMap(); } }, { rootMargin: '600px 0px' });
+  io.observe(mapCanvas);
+} else startMap();
 
 /* ---------- Mundos ---------- */
 const pill = $('.world-switch__pill');
@@ -436,42 +537,95 @@ function setWorld(w, origin) {
   if (html.dataset.world === w) return;
   const apply = () => {
     html.dataset.world = w;
-    $('meta[name="theme-color"]').content = w === 'home' ? D.brand.colors.navy : D.brand.colors.carbon;
+    $('meta[name="theme-color"]').content = w === 'home' ? '#EAF0F5' : '#F4EFE6';
     $$('[data-world-btn]').forEach(b => b.setAttribute('aria-selected', b.dataset.worldBtn === w));
     $('#world-car').hidden = w !== 'car'; $('#world-home').hidden = w !== 'home';
-    placePill();
+    placePill(); navState();
   };
   if (origin) { html.style.setProperty('--vt-x', origin.x + 'px'); html.style.setProperty('--vt-y', origin.y + 'px'); }
-  if (document.startViewTransition && !reduced) document.startViewTransition(apply).finished.then(() => window.ScrollTrigger?.refresh());
+  if (document.startViewTransition && !reduced) {
+    const vt = document.startViewTransition(apply);
+    vt.ready.catch(() => {});
+    vt.finished.catch(() => {}).then(() => window.ScrollTrigger?.refresh());
+  }
   else { apply(); window.ScrollTrigger?.refresh(); }
 }
 $$('[data-world-btn]').forEach(b => b.addEventListener('click', e => setWorld(b.dataset.worldBtn, { x: e.clientX, y: e.clientY })));
 $$('[data-go-world]').forEach(a => a.addEventListener('click', e => {
   const w = a.dataset.goWorld; const target = $(a.getAttribute('href'));
   e.preventDefault();
+  setMenu(false);
   setWorld(w, { x: e.clientX, y: e.clientY });
-  setTimeout(() => { if (window.__lenis) window.__lenis.scrollTo(target, { offset: -70 }); else target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }); }, 60);
+  setTimeout(() => { if (window.__lenis) window.__lenis.scrollTo(target, { offset: -80 }); else target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }); }, 60);
 }));
 addEventListener('resize', placePill);
 document.fonts?.ready.then(placePill);
 
+/* ---------- Navegación y menú ---------- */
+const nav = $('[data-nav]');
+const menu = $('[data-menu]'), burger = $('[data-menu-toggle]');
+function setMenu(open) {
+  const was = burger.getAttribute('aria-expanded') === 'true';
+  if (open === was) return;
+  burger.setAttribute('aria-expanded', open);
+  burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+  document.body.classList.toggle('menu-open', open);
+  if (open) {
+    menu.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => menu.classList.add('is-open')));
+    window.__lenis?.stop();
+    setTimeout(() => $('a', menu)?.focus({ preventScroll: true }), 60);
+  } else {
+    menu.classList.remove('is-open');
+    window.__lenis?.start();
+    setTimeout(() => { if (!menu.classList.contains('is-open')) menu.hidden = true; }, reduced ? 0 : 320);
+    burger.focus({ preventScroll: true });
+  }
+}
+burger.addEventListener('click', () => setMenu(true));
+$('[data-menu-close]').addEventListener('click', () => setMenu(false));
+$$('a:not([data-go-world])', menu).forEach(a => a.addEventListener('click', () => setMenu(false)));
+menu.addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const f = $$('a,button', menu); const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
+addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!menu.hidden) setMenu(false);
+  if (!chips.hidden) { sizeMenu(false); sizeBtn.focus(); }
+  if (!$('[data-cart-sheet]').hidden && !wide.matches) toggleSheet(false);
+});
+const picker0 = $('.sizes__picker'), plansSec = $('#planes');
+let navRaf = 0;
+function navState() {
+  navRaf = 0;
+  nav.classList.toggle('is-scrolled', scrollY > 8);
+  const nh = nav.offsetHeight;
+  const show = html.dataset.world === 'car' && picker0.getBoundingClientRect().bottom < nh && plansSec.getBoundingClientRect().bottom > nh + 120;
+  nav.classList.toggle('has-size', show);
+  if (!show && !chips.hidden) sizeMenu(false);
+}
+addEventListener('scroll', () => { if (!navRaf) navRaf = requestAnimationFrame(navState); }, { passive: true });
+
 /* ---------- Botón flotante: aparece al pasar el hero ---------- */
-new IntersectionObserver(([e]) => document.body.classList.toggle('past-hero', !e.isIntersecting), { rootMargin: '-40% 0px 0px 0px' }).observe($('.hero'));
+new IntersectionObserver(([e]) => document.body.classList.toggle('past-hero', !e.isIntersecting && e.boundingClientRect.top < 0), { threshold: 0 }).observe($('.hero'));
 
 /* ---------- Inicio ---------- */
 setSize(size, false);
 renderCart();
 placePill();
+navState();
 
-/* ---------- Movimiento (GSAP) ---------- */
+/* ---------- Movimiento ---------- */
 function motion() {
   const g = window.gsap, ST = window.ScrollTrigger;
-  const intro = $('.intro');
   const startHero = () => { wipe?.startDemo(); };
-  if (!g || reduced) { intro?.remove(); $$('[data-reveal]').forEach(e => { e.style.opacity = 1; e.style.transform = 'none'; }); startHero(); return; }
+  if (!g || reduced) { startHero(); return; }
+  html.classList.add('js-motion');
   g.registerPlugin(ST, window.SplitText);
 
-  // Scroll suave
   if (window.Lenis && fine) {
     const lenis = new window.Lenis({ lerp: .11 });
     window.__lenis = lenis;
@@ -479,92 +633,21 @@ function motion() {
     g.ticker.add(t => lenis.raf(t * 1000)); g.ticker.lagSmoothing(0);
   }
 
-  // Intro de marca
-  const heroIn = () => {
-    g.from('.hero__stage', { clipPath: 'inset(12% 12% 12% 12% round 28px)', scale: 1.06, duration: 1.3, ease: 'expo.out' });
-    g.from('.hero__copy > *', { y: 30, opacity: 0, stagger: .08, duration: 1, ease: 'expo.out', delay: .1, clearProps: 'transform' });
-    g.from('.nav', { y: -20, opacity: 0, duration: .8, ease: 'expo.out', delay: .2, clearProps: 'transform,opacity' });
-    startHero();
-  };
-  if (intro && getComputedStyle(intro).display !== 'none') {
-    try { sessionStorage.setItem('intro', '1'); } catch (e) {}
-    const tl = g.timeline({ onComplete: () => { intro.remove(); } });
-    tl.set('.intro__squeegee', { opacity: 1 })
-      .to('.intro__squeegee', { x: () => innerWidth, duration: .75, ease: 'power3.inOut' }, .1)
-      .to('.intro__logo', { clipPath: 'inset(0 0% 0 0)', duration: .6, ease: 'power3.inOut' }, .2)
-      .to('.intro__logo', { scale: .9, opacity: 0, duration: .45, ease: 'power2.in' }, '+=.25')
-      .to(intro, { yPercent: -100, duration: .8, ease: 'expo.inOut' }, '-=.2')
-      .add(heroIn, '-=.55');
-  } else { intro?.remove(); heroIn(); }
+  g.from('.hero__copy > *', { y: 28, opacity: 0, stagger: .08, duration: 1, ease: 'expo.out', delay: .05, clearProps: 'transform,opacity' });
+  g.from('.hero__stage', { clipPath: 'inset(0 0 100% 0)', duration: 1.2, ease: 'expo.inOut', clearProps: 'clipPath' });
+  startHero();
 
-  // Títulos por líneas
+  const rio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); rio.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+  $$('[data-reveal]').forEach(el => rio.observe(el));
+
   document.fonts.ready.then(() => {
     $$('[data-split]').forEach(el => {
       const split = window.SplitText.create(el, { type: 'lines', mask: 'lines', linesClass: 'split-line' });
-      g.from(split.lines, { yPercent: 105, duration: 1.1, ease: 'expo.out', stagger: .08, scrollTrigger: { trigger: el, start: 'top 88%' } });
+      g.from(split.lines, { yPercent: 105, duration: 1.1, ease: 'expo.out', stagger: .08, scrollTrigger: { trigger: el, start: 'top 90%' } });
     });
     ST.refresh();
   });
 
-  // Reveals
-  ST.batch('[data-reveal]', { start: 'top 90%', onEnter: els => g.to(els, { opacity: 1, y: 0, duration: 1, ease: 'expo.out', stagger: .08, overwrite: true }) });
-
-  // Nav
-  const nav = $('[data-nav]');
-  ST.create({ start: 0, end: 'max', onUpdate: s => {
-    nav.classList.toggle('is-scrolled', s.scroll() > 40);
-    const hide = s.direction === 1 && s.scroll() > 400;
-    nav.classList.toggle('is-hidden', hide); html.classList.toggle('nav-up', hide);
-  } });
-
-  // Marquee con velocidad del scroll
-  const mq = $('[data-marquee]');
-  let x = 0, skew = 0, vel = 0;
-  ST.create({ start: 0, end: 'max', onUpdate: s => { vel = s.getVelocity(); } });
-  g.ticker.add(() => {
-    const half = mq.scrollWidth / 2; if (!half) return;
-    x -= .6 + Math.min(Math.abs(vel) / 260, 8); if (-x >= half) x += half;
-    skew += (g.utils.clamp(-10, 10, vel / -260) - skew) * .1; vel *= .92;
-    mq.style.transform = `translate3d(${x}px,0,0) skewX(${skew}deg)`;
-  });
-
-  // Escalera fijada (escritorio) o carrusel (móvil)
-  const ladder = $('[data-ladder]'), trk = $('[data-ladder-track]'), bar = $('.ladder__bar');
-  const cards = $$('.svc', trk);
-  const setProg = p => { bar.style.setProperty('--lp', .1 + .9 * p); cards.forEach(c => c.style.setProperty('--sheen', (-60 + p * 120) + '%')); };
-  const mm = g.matchMedia();
-  mm.add('(min-width: 900px) and (min-height: 760px)', () => {
-    const intro = $('.ladder__intro'); trk.prepend(intro); ladder.classList.add('is-pinned');
-    const dist = () => Math.max(0, trk.scrollWidth - innerWidth);
-    g.to(trk, { x: () => -dist(), ease: 'none', scrollTrigger: { trigger: ladder, start: 'top top+=' + 100, end: () => '+=' + dist(), pin: true, scrub: .6, invalidateOnRefresh: true, anticipatePin: 1, onUpdate: s => setProg(s.progress) } });
-    return () => { ladder.prepend(intro); ladder.classList.remove('is-pinned'); };
-  });
-  mm.add('(max-width: 899px), (max-height: 759px)', () => {
-    ladder.classList.add('is-static');
-    const onS = () => setProg(trk.scrollLeft / Math.max(1, trk.scrollWidth - trk.clientWidth));
-    trk.addEventListener('scroll', onS, { passive: true }); onS();
-    return () => { ladder.classList.remove('is-static'); trk.removeEventListener('scroll', onS); };
-  });
-
-  // Barra de tamaño fija mientras recorres los servicios de autos
-  ST.create({ trigger: '.ladder', endTrigger: '#planes', start: 'top 60%', end: 'bottom 40%', toggleClass: { targets: '[data-sizebar]', className: 'is-on' } });
-
-  // Mapa: dibujar rutas
-  $$('.map__river, .map__road').forEach(p => {
-    const L = p.getTotalLength();
-    g.fromTo(p, { strokeDasharray: L, strokeDashoffset: L }, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut', scrollTrigger: { trigger: '.map', start: 'top 80%' }, onComplete: () => { if (p.classList.contains('map__road')) p.style.strokeDasharray = '4 6'; } });
-  });
-  g.from('.map__zone', { scale: 0, transformOrigin: 'center', stagger: .25, duration: 1, ease: 'back.out(2)', scrollTrigger: { trigger: '.map', start: 'top 70%' } });
-
-  // Logo final
-  g.from('.final__logo', { y: 40, rotate: -8, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '.final', start: 'top 80%' } });
-  g.to('.badge', { rotate: 360, duration: 18, repeat: -1, ease: 'none' });
-
-  // Botones magnéticos
-  if (fine) $$('.magnetic').forEach(b => {
-    const xTo = g.quickTo(b, 'x', { duration: .5, ease: 'power3' }), yTo = g.quickTo(b, 'y', { duration: .5, ease: 'power3' });
-    b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); xTo((e.clientX - r.left - r.width / 2) * .3); yTo((e.clientY - r.top - r.height / 2) * .35); });
-    b.addEventListener('pointerleave', () => { xTo(0); yTo(0); });
-  });
+  g.from('.final__logo', { y: 40, rotate: -6, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '.final', start: 'top 80%' } });
 }
 if (document.readyState === 'complete') motion(); else addEventListener('load', motion, { once: true });
